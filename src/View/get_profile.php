@@ -22,9 +22,9 @@
         </div>
     </div>
     <div class="form-group">
-        <label for="email">Company Name:</label>
+        <label for="email">ID:</label>
         <div class="relative">
-            <input class="form-control" type="url" pattern="https?://.+" required="" placeholder="Mention your company link(url)...">
+            <input class="form-control" type="url" pattern="https?://.+" required="" placeholder="Mention your id(url)...">
             <i class="fa fa-building"></i>
         </div>
     </div>

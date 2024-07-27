@@ -1,84 +1,107 @@
-<?php
-function getDatabaseConnection() {
-    try {
-        $pdo = new PDO("pgsql:host=db;port=5432;dbname=dbname", "dbuser", "pwd");
-        $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-        return $pdo;
-    } catch (PDOException $e) {
-        die ("Error" . $e->getMessage());
-    }
-}
-
-//Подключение к базе данных
-$pdo = getDatabaseConnection();
-
-//Извлечение данных о продуктах
-$stmt = $pdo->query('SELECT * FROM products');
-$products = $stmt->fetchAll();
-?>
-
 <div class="container">
     <h3>Catalog</h3>
     <div class="card-deck">
-        <?php foreach ($products as $product) : ?>
-        <div class="card text-center">
-            <a href="#">
-                <div class="card-header">
-                    Hit!
-                </div>
-                <img class="card-img-top" src="<?php echo htmlspecialchars($product['image_url']); ?>" alt="Card image">
-                <div class="card-body">
-                    <p class="card-text text-muted"><?php echo htmlspecialchars($product["description"]); ?></p>
-                    <a href="#"><h5 class="card-title"><?php echo htmlspecialchars($product["name"]); ?></h5></a>
-                    <div class="card-footer">
-                        <?php echo htmlspecialchars($product["price"]); ?>
-                    </div>
-                </div>
-            </a>
-        </div>
+        <?php foreach ($products as $product): ?>
+            <div class="product">
+                <h2><?php echo htmlspecialchars($product['name']); ?></h2>
+                <img src="<?php echo htmlspecialchars($product['image_url']); ?>"/>
+                <p><?php echo htmlspecialchars($product['description']); ?></p>
+                <form action="/add-to-cart" method="POST">
+                    <input type="hidden" name="product_id" value="<?php echo htmlspecialchars($product['id']); ?>">
+                    <label for="quantity">Количество:</label>
+                    <input type="number" name="quantity" id="quantity" value="1" min="1">
+                    <button type="submit">Добавить в корзину</button>
+                </form>
+            </div>
         <?php endforeach; ?>
     </div>
 </div>
 
 <style>
     body {
-        font-style: sans-serif;
+        font-family: Arial, sans-serif;
+        background-color: #f4f4f4;
+        margin: 0;
+        padding: 0;
     }
 
-    a {
-        text-decoration: none;
-    }
-
-    a:hover {
-        text-decoration: none;
+    .container {
+        width: 90%;
+        margin: auto;
+        overflow: hidden;
     }
 
     h3 {
-        line-height: 3em;
+        text-align: center;
+        color: #333;
+        padding: 1rem 0;
+        border-bottom: 2px solid #e1e1e1;
+        margin-bottom: 2rem;
+    }
+
+    .card-deck {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        gap: 1rem;
     }
 
     .card {
-        max-width: 16rem;
-    }
-
-    .card:hover {
-        box-shadow: 1px 2px 10px lightgray;
-        transition: 0.2s;
+        background: #fff;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        overflow: hidden;
+        width: 100%;
+        max-width: 300px;
+        margin: auto;
     }
 
     .card-header {
-        font-size: 13px;
-        color: gray;
-        background-color: white;
+        background-color: #f8f8f8;
+        padding: 1rem;
+        text-align: center;
+        border-bottom: 1px solid #e1e1e1;
     }
 
-    .text-muted {
-        font-size: 11px;
+    .card-img {
+        width: 100%;
+        height: auto;
     }
 
-    .card-footer{
-        font-weight: bold;
-        font-size: 18px;
-        background-color: white;
+    .card-body {
+        padding: 1rem;
+    }
+
+    .card-footer {
+        background-color: #f8f8f8;
+        padding: 1rem;
+        text-align: center;
+        border-top: 1px solid #e1e1e1;
+    }
+
+    .card-footer .btn {
+        background-color: #007bff;
+        color: white;
+        border: none;
+        padding: 0.5rem 1rem;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 1rem;
+    }
+
+    .card-footer .btn:hover {
+        background-color: #0056b3;
+    }
+
+    label {
+        margin-right: 0.5rem;
+    }
+
+    input[type="number"] {
+        width: 60px;
+        padding: 0.25rem;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        margin-right: 0.5rem;
     }
 </style>

@@ -1,7 +1,14 @@
 <?php
-session_start();
-require_once '../Model/User.php';
+namespace Controller;
+//require_once '../Model/User.php';
+use Model\User;
+
 class UserController {
+
+    public function getMyProfile()
+    {
+        require_once '../View/get_profile.php';
+    }
 
     public function getLogin()
     {
@@ -76,12 +83,13 @@ class UserController {
             $name = $_POST['name'];
             $email = $_POST['email'];
             $password = $_POST['psw'];
+            $passwordHash = password_hash($password, PASSWORD_DEFAULT);
 
             $user = new User();
-            $passwordHash = password_hash($password, PASSWORD_DEFAULT);
             $user->insert($name, $email, $passwordHash);
 
             $user->select($email);
+            header('Location: /login');
 
 
         }
@@ -124,6 +132,7 @@ class UserController {
                 session_start();
                 $_SESSION['userId']= $user['id'];
                 $_SESSION['userName'] = $user['name'];
+                header('Location: /catalog');
 
             } else {
                 $errors["username"] = "Username or password is incorrect";
@@ -133,6 +142,16 @@ class UserController {
 
         }
         require_once __DIR__ . '/../View/get_login.php';
+    }
+
+    public function logout()
+    {
+        // Завершите сессию пользователя
+        session_unset();
+        session_destroy();
+
+        // Перенаправьте пользователя на страницу входа или главную страницу
+        header('Location: /login');
     }
 
 
