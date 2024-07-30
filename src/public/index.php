@@ -86,6 +86,18 @@ if ($requestUri === '/registration'){
 } elseif ($_SERVER['REQUEST_URI'] === '/add-to-cart' && $_SERVER['REQUEST_METHOD'] === 'POST') {
     $cartController = new CartController();
     $cartController->addProduct();
+} elseif ($requestUri === '/increase-product' && $requestMethod === 'POST') {
+    $cartController = new CartController();
+    $cartController->increaseProductQuantity();
+} elseif ($requestUri === '/decrease-product' && $requestMethod === 'POST') {
+    $cartController = new CartController();
+    $cartController->decreaseProductQuantity();
+} elseif ($requestUri === '/update-cart' && $requestMethod === 'POST') {
+    $cartController = new CartController();
+    $cartController->updateCart();
+} elseif ($requestUri === '/delete-product' && $requestMethod === 'POST') {
+    $cartController = new CartController();
+    $cartController->deleteProduct();
 } else {
     require_once './404.php';
 }
