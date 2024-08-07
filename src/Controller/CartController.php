@@ -2,14 +2,9 @@
 namespace Controller;
 
 use Model\Cart;
-use Model\Product;
 use Model\UserProduct;
 
 class CartController{
-    public function getAddProductForm()
-    {
-        require_once '../View/add-product.php';
-    }
 
     private $userProduct;
     private $cartModel;
@@ -41,12 +36,10 @@ class CartController{
             $this->userProduct->addProductToCart($userId, $productId, 1);
         }
 
-        $_SESSION['success'] = "Количество продукта увеличено на 1.";
-        header('Location: /catalog');
+
 
 
     }
-
 
     public function decreaseProductQuantity() {
         session_start();
@@ -77,7 +70,6 @@ class CartController{
 
 
     }
-
 
     public function updateCart() {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {

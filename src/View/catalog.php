@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Catalog</title>
+    <title>Каталог</title>
     <style>
         body {
             font-family: sans-serif;
@@ -71,20 +71,23 @@
     </style>
 </head>
 <body>
-<a href="/my_profile">My profile</a>
-<a href="/cart">Cart</a>
-<a href="/add-product">Add product</a>
-<a href="/logout">Logout</a>
+<a href="/my_profile">Мой профиль</a>
+<a href="/cart">
+    <img src="https://cdn-icons-png.flaticon.com/512/1374/1374128.png" alt="Cart Icon" style="width:16px; height:16px; vertical-align:middle;">
+    Cart
+</a>
+<a href="/add-product">Добавить продукт</a>
+<a href="/logout">Выйти</a>
 
 <div class="container">
-    <h3>Catalog</h3>
+    <h3>Каталог</h3>
     <div class="card-deck">
         <?php if (!empty($products)): ?>
             <?php foreach ($products as $product): ?>
                 <div class="card text-center">
                     <a href="#">
                         <div class="card-header">
-                            Hit!
+                            Хит!
                         </div>
                         <?php
                         $img_url = is_array($product['image_url']) ? $product['image_url'][0] : $product['image_url'];
@@ -102,7 +105,7 @@
                                 ?>
                                 Количество: <?= htmlspecialchars((string)($count ?? '0')); ?>
 
-                                <form action="/increase-product" method="POST" style="display: inline;">
+                                <form class="increase-product" action="/increase-product" method="POST" style="display: inline;" onsubmit="return false;">
                                     <input type="hidden" name="productId" value="<?= htmlspecialchars((string)($product['id'] ?? '')); ?>">
                                     <button type="submit">Увеличить на 1</button>
                                 </form>
@@ -122,3 +125,23 @@
 </div>
 </body>
 </html>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $("document").ready(function() {
+        var form = $('.increase-product');
+        form.submit(function () {
+            $.ajax({
+                type: 'POST',
+                url: "/increase-product",
+                data: $(this).serialize(),
+                success: function (){
+                    var p = $('.increase-product');
+                    p.text(0);
+
+
+                }
+            })
+        })
+    });
+</script>
