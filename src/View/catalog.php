@@ -83,6 +83,7 @@
     <h3>Каталог</h3>
     <div class="card-deck">
         <?php if (!empty($products)): ?>
+            <?php /** @var $product \Entity\Product */ ?>
             <?php foreach ($products as $product): ?>
                 <div class="card text-center">
                     <a href="#">
@@ -90,13 +91,13 @@
                             Хит!
                         </div>
                         <?php
-                        $img_url = is_array($product['image_url']) ? $product['image_url'][0] : $product['image_url'];
+                        $img_url = is_array($product->getImageUrl()) ? $product['image_url'][0] : $product['image_url'];
                         $image_url = htmlspecialchars($img_url ?? 'default_image.jpg');
                         ?>
                         <img class="card-img-top" src="<?= $image_url; ?>" alt="Card image">
                         <div class="card-body">
                             <p class="card-text text-muted"><?= htmlspecialchars($product['description'] ?? ''); ?></p>
-                            <a href="#"><h5 class="card-title"><?= htmlspecialchars($product['name'] ?? ''); ?></h5></a>
+                            <a href="#"><h5 class="card-title"><?= htmlspecialchars($product-> ?? ''); ?></h5></a>
                             <div class="card-footer">
                                 Цена: <?= htmlspecialchars($product['price'] ?? '0'); ?>$
                                 <br>

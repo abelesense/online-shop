@@ -24,7 +24,6 @@ $app->addPostRoute('/login', UserController::class, 'login');
 $app->addGetRoute('/my_profile', UserController::class, 'showProfile');
 $app->addGetRoute('/catalog', ProductController::class, 'showCatalog');
 $app->addGetRoute('/add-product', CartController::class, 'getAddProductForm');
-$app->addPostRoute('/add-product', CartController::class, 'addProduct');
 $app->addPostRoute('/increase-product', CartController::class, 'increaseProductQuantity');
 $app->addPostRoute('/decrease-product', CartController::class, 'decreaseProductQuantity');
 $app->addPostRoute('/remove-product', CartController::class, 'removeProduct');

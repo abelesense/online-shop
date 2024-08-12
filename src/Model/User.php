@@ -22,13 +22,7 @@ class User extends Model
         return $obj;
     }
 
-    public function select(string $email)
-    {
-        $stmt = $this->pdo->prepare("SELECT * FROM users WHERE email = :email");
-        $stmt->execute([':email' => $email]);
-    }
-
-    public function validateEmail(string $email): bool
+    public function countWithEmail(string $email): bool
     {
         $stmt = $this->pdo->prepare("SELECT COUNT(*) FROM users WHERE email = :email");
         $stmt->execute([':email' => $email]);
@@ -36,4 +30,4 @@ class User extends Model
         return $count > 0;
     }
 }
-?>
+

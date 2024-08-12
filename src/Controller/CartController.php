@@ -6,20 +6,22 @@ use Model\UserProduct;
 
 class CartController{
 
-    private $userProduct;
-    private $cartModel;
+    private UserProduct $userProductModel;
+    private Cart $cartModel;
 
     // Конструктор инициализирует модели UserProduct и Product
     public function __construct()
     {
-        $this->userProduct = new UserProduct();
+        $this->userProductModel = new UserProduct();
         $this->cartModel = new Cart();
     }
-    public function getAddProductForm(){
+    public function getAddProductForm()
+    {
         require_once "../View/add-product.php";
     }
 
-    public function increaseProductQuantity() {
+    public function increaseProductQuantity()
+    {
         session_start();
 
         if (!isset($_SESSION['userId'])) {
@@ -31,21 +33,22 @@ class CartController{
         $userId = $_SESSION['userId'];
         $productId = $_POST['productId'];
 
-        $existingProduct = $this->userProduct->getOneByUserIdAndProductId($userId, $productId);
+        $existingProduct = $this->userProductModel->getOneByUserIdAndProductId($userId, $productId);
 
         if ($existingProduct) {
-            $this->userProduct->increaseProductCount($userId, $productId);
+            $this->userProductModel->increaseProductCount($userId, $productId);
         } else {
-            $this->userProduct->addProductToCart($userId, $productId, 1);
+            $this->userProductModel->addProductToCart($userId, $productId, 1);
         }
-        $count = $this->userProduct->countOfUserProducts($userId, $productId);
+        $count = $this->userProductModel->countOfUserProducts($userId, $productId);
         $result = ['count' => $count];
 
         echo json_encode($result);
 
     }
 
-    public function decreaseProductQuantity() {
+    public function decreaseProductQuantity()
+    {
         session_start();
 
         if (!isset($_SESSION['userId'])) {
@@ -58,27 +61,27 @@ class CartController{
         $productId = $_POST['productId'];
 
 
-        $existingProduct = $this->userProduct->getOneByUserIdAndProductId($userId, $productId);
+        $existingProduct = $this->userProductModel->getOneByUserIdAndProductId($userId, $productId);
 
         if ($existingProduct && $existingProduct->getCount() > 1) {
-            $this->userProduct->decreaseProductCount($userId, $productId);
+            $this->userProductModel->decreaseProductCount($userId, $productId);
             $_SESSION['success'] = "Количество продукта уменьшено на 1.";
         } elseif ($existingProduct && $existingProduct->getCount() === 1) {
-            $this->userProduct->delete($userId, $productId);
+            $this->userProductModel->delete($userId, $productId);
             $_SESSION['success'] = "Продукт удален из корзины.";
         } else {
             $_SESSION['errors'][] = "Количество продукта не может быть меньше 0.";
         }
 
-        $count = $this->userProduct->countOfUserProducts($userId, $productId);
+        $count = $this->userProductModel->countOfUserProducts($userId, $productId);
         $result = ['count' => $count];
         echo json_encode($result);
 
 
     }
 
-    public function updateCart() {
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    public function updateCart()
+    {
             $productId = $_POST['product_id'];
             $quantity = $_POST['quantity'];
 
@@ -95,7 +98,6 @@ class CartController{
                     echo "Ошибка при удалении товара из корзины.";
                 }
             }
-        }
     }
 
 

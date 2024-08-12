@@ -6,16 +6,17 @@ use Model\UserProduct;
 
 class ProductController
 {
-    private $productModel;
-    private $userProduct;
-    public function __construct(){
+    private Product $productModel;
+    private UserProduct $userProduct;
+
+    public function __construct()
+    {
         $this->productModel = new Product();
         $this->userProduct = new UserProduct();
     }
 
     //Метод для отображения каталога продуктов
     public function showCatalog()
-
     {
 
         session_start();
@@ -25,9 +26,9 @@ class ProductController
             //Получение списка продуктов из модели
             $products = $this->productModel->getAllProducts();
 
-            foreach ($products as &$product) {
-                $userProduct = $this->userProduct->getOneByUserIdAndProductId($userId, $product['id']);
-                $product['count'] = $userProduct['count'] ?? 0;
+            foreach ($products as $product) {
+                $userProduct = $this->userProduct->getOneByUserIdAndProductId($userId, $product->getId());
+                $product->setCountInCart($userProduct->getCount());
             }
             unset($product);
             // Передача данных в представление

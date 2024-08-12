@@ -26,14 +26,14 @@ class UserProduct extends Model
         return true;
     }
 
-    public function TakeUserProducts(): array{
-        $userId = $_SESSION['userId'];
+    public function takeUserProducts(int $userId): array
+    {
         $stmt = $this->pdo->prepare("SELECT * FROM user_products WHERE user_id = :user_id");
         $stmt->execute([':user_id' => $userId]);
-        $UserProducts = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $userProducts = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
         $userProductObjects = [];
-        foreach ($UserProducts as $product) {
+        foreach ($userProducts as $product) {
             $userProductObjects[] = new \Entity\UserProduct(
                 $product['id'],
                 $product['user_id'],
@@ -97,7 +97,28 @@ class UserProduct extends Model
         return $result;
     }
 
+    public function updateCart($productId, $quantity) {
+        session_start();
+        $userId = $_SESSION['userId'];
 
+        if ($quantity > 0) {
+            $stmt = $this->pdo->prepare("UPDATE user_products SET count = :quantity WHERE user_id = :userId AND product_id = :productId");
+            $stmt->execute([':quantity' => $quantity, ':userId' => $userId, ':productId' => $productId]);
+        } else {
+            $stmt = $this->pdo->prepare("DELETE FROM user_products WHERE user_id = :userId AND product_id = :productId");
+            $stmt->execute([':userId' => $userId, ':productId' => $productId]);
+        }
+
+    }
+
+    public function deleteProduct($productId) {
+        session_start();
+        $userId = $_SESSION['userId'];
+
+        $stmt = $this->pdo->prepare("DELETE FROM user_products WHERE user_id = :userId AND product_id = :productId");
+        $stmt->execute([':userId' => $userId, ':productId' => $productId]);
+
+    }
 
 
 }

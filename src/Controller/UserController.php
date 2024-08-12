@@ -59,7 +59,7 @@ class UserController {
             $errors['email'] = "Email is not a valid email address";
         }
         $user = new User();
-        $count= $user->validateEmail($email);
+        $count= $user->countWithEmail($email);
         if ($count > 0) {
             $errors['email'] = "Email already exists";
         }
@@ -88,7 +88,6 @@ class UserController {
             $user = new User();
             $user->insert($name, $email, $passwordHash);
 
-            $user->select($email);
             header('Location: /login');
 
 

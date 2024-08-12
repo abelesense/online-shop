@@ -5,21 +5,22 @@ use Model\Product;
 //require_once '../Model/Product.php';
 //require_once '../Model/UserProduct.php';
 
-class UserProductController extends UserProduct
+class UserProductController
 {
-    private $UserProductModel;
+    private UserProduct $userProductModel;
 
     public function __construct()
     {
-        $this->UserProductModel = new UserProduct();
+        $this->userProductModel = new UserProduct();
     }
     public function showCart()
     {
         session_start();
         // Проверка авторизован ли пользователь
         if (isset($_SESSION['userId'])) {
+            $userId = $_SESSION['userId'];
             // Получение списка продуктов из модели
-            $userProducts = $this->UserProductModel->TakeUserProducts();
+            $userProducts = $this->userProductModel->takeUserProducts($userId);
             $productCounts = [];
             foreach ($userProducts as $userProduct) {
                 $productCounts[$userProduct->getProductId()] = $userProduct->getCount();
@@ -27,7 +28,7 @@ class UserProductController extends UserProduct
 
             $obj = new Product();
             $productIds = array_keys($productCounts);
-            $products = $obj->GetUserProducts($productIds);
+            $products = $obj->getUserProducts($productIds);
 
             // Создаем новый массив с добавленным количеством
             $updatedProducts = [];

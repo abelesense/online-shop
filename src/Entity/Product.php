@@ -9,6 +9,9 @@ class Product
     private string $description;
     private string $price;
     private string $image;
+
+    private int $countInCart;
+
     public function __construct(int $id, string $name, string $description, string $price, string $image)
     {
         $this->id = $id;
@@ -59,5 +62,8 @@ class Product
         return $this->image;
     }
 
-
+    public function setCountInCart(int $count)
+    {
+        $this->countInCart = $count;
+    }
 }

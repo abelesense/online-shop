@@ -2,9 +2,14 @@
 namespace Model;
 use PDO;
 
-class Product extends Model{
+class Product extends Model
+{
 
-    public function getAllProducts(): array {
+    /**
+     * @return \Entity\Product[]
+     */
+    public function getAllProducts(): array
+    {
         $stmt = $this->pdo->query("SELECT * FROM products");
         $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
         $products = [];
@@ -23,7 +28,7 @@ class Product extends Model{
     }
 
 
-    public function GetUserProducts(array $productIds)
+    public function getUserProducts(array $productIds): array
     {
         if (empty($productIds)) {
             return [];
@@ -38,6 +43,6 @@ class Product extends Model{
         // Выполняем запрос с массивом идентификаторов продуктов
         $stmt->execute($productIds);
 
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 }
