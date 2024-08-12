@@ -4,10 +4,24 @@ use PDO;
 
 class Product extends Model{
 
-    public function getAllProducts(): array{
+    public function getAllProducts(): array {
         $stmt = $this->pdo->query("SELECT * FROM products");
-        return $stmt->fetchAll();
+        $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $products = [];
+
+        foreach ($result as $product) {
+            $products[] = new \Entity\Product(
+                $product['id'],
+                $product['name'],
+                $product['description'],
+                $product['price'],
+                $product['image_url']
+            );
+        }
+
+        return $products;
     }
+
 
     public function GetUserProducts(array $productIds)
     {

@@ -12,12 +12,14 @@ class User extends Model
         $stmt->execute([':name' => $name, ':email' => $email, ':password' => $passwordHash]);
     }
 
-    public function getUserByEmail(string $email): array
+    public function getUserByEmail(string $email): \Entity\User
     {
         $stmt = $this->pdo->prepare("SELECT * FROM users WHERE email = :email");
         $stmt->execute([':email' => $email]);
         $user = $stmt->fetch(PDO::FETCH_ASSOC);
-        return $user;
+
+        $obj = new \Entity\User($user['id'], $user['name'], $user['password'], $user['email']);
+        return $obj;
     }
 
     public function select(string $email)

@@ -22,7 +22,7 @@ class UserProductController extends UserProduct
             $userProducts = $this->UserProductModel->TakeUserProducts();
             $productCounts = [];
             foreach ($userProducts as $userProduct) {
-                $productCounts[$userProduct['product_id']] = $userProduct['count'];
+                $productCounts[$userProduct->getProductId()] = $userProduct->getCount();
             }
 
             $obj = new Product();

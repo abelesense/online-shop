@@ -30,21 +30,37 @@ class UserProduct extends Model
         $userId = $_SESSION['userId'];
         $stmt = $this->pdo->prepare("SELECT * FROM user_products WHERE user_id = :user_id");
         $stmt->execute([':user_id' => $userId]);
-        return $stmt->fetchAll();
+        $UserProducts = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        $userProductObjects = [];
+        foreach ($UserProducts as $product) {
+            $userProductObjects[] = new \Entity\UserProduct(
+                $product['id'],
+                $product['user_id'],
+                $product['product_id'],
+                $product['count']
+            );
+        }
+
+        return $userProductObjects;
     }
 
-    public function getOneByUserIdAndProductId(int $userId, int $productId): ?array
+    public function getOneByUserIdAndProductId(int $userId, int $productId): ?\Entity\UserProduct
     {
         $stmt = $this->pdo->prepare("SELECT * FROM user_products WHERE user_id = :user_id AND product_id = :product_id");
         $stmt->execute(['user_id' => $userId, 'product_id' => $productId]);
         $result = $stmt->fetch(\PDO::FETCH_ASSOC);
 
-        if (empty($result)) {
+        if ($result === false) {
             return null;
         }
 
-        return $result;
+        // Создаем объект только если запрос вернул данные
+        $obj = new \Entity\UserProduct($result['id'], $result['user_id'], $result['product_id'], $result['count']);
+
+        return $obj;
     }
+
     public function increaseProductCount(int $userId, int $productId): bool
     {
         $stmt = $this->pdo->prepare("UPDATE user_products SET count = count + 1 WHERE user_id = :user_id AND product_id = :product_id");
@@ -68,6 +84,17 @@ class UserProduct extends Model
     {
         $stmt = $this->pdo->prepare("DELETE FROM user_products WHERE user_id = :user_id AND product_id = :product_id");
         $stmt->execute(['user_id' => $userId, 'product_id' => $productId]);
+    }
+
+    public function countOfUserProducts(int $userId, $productId): int
+    {
+        $stmt = $this->pdo->prepare("SELECT count FROM user_products WHERE user_id = :user_id AND product_id = :product_id");
+        $stmt->execute(['user_id' => $userId, 'product_id' => $productId]);
+        $result = $stmt->fetchColumn();
+        if(empty($result)){
+            return 0;
+        }
+        return $result;
     }
 
 

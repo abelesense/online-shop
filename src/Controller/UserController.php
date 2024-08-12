@@ -125,13 +125,13 @@ class UserController {
         //Если нет ошибок, выполняем подключение к БД и проверку пользователя
         if (!empty($user)) {
             $password = $_POST['password'];
-            $passwordHash = $user['password'];
+            $passwordHash = $user->getPassword();
 
 
             if (password_verify($password, $passwordHash)) {
                 session_start();
-                $_SESSION['userId']= $user['id'];
-                $_SESSION['userName'] = $user['name'];
+                $_SESSION['userId']= $user->getId();
+                $_SESSION['userName'] = $user->getName();
                 header('Location: /catalog');
 
             } else {

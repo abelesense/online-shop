@@ -22,7 +22,6 @@ class Cart extends Model {
             $stmt->execute([':userId' => $userId, ':productId' => $productId, ':quantity' => $quantity]);
         }
 
-        return $stmt;
     }
 
     public function increaseProductQuantity($productId) {
@@ -32,7 +31,6 @@ class Cart extends Model {
         $stmt = $this->pdo->prepare("UPDATE user_products SET count = count + 1 WHERE user_id = :userId AND product_id = :productId");
         $stmt->execute([':userId' => $userId, ':productId' => $productId]);
 
-        return $stmt;
     }
 
     public function decreaseProductQuantity($productId) {
@@ -51,7 +49,6 @@ class Cart extends Model {
             $stmt->execute([':userId' => $userId, ':productId' => $productId]);
         }
 
-        return $stmt;
     }
 
     public function updateCart($productId, $quantity) {
@@ -66,7 +63,6 @@ class Cart extends Model {
             $stmt->execute([':userId' => $userId, ':productId' => $productId]);
         }
 
-        return $stmt;
     }
 
     public function deleteProduct($productId) {
@@ -76,7 +72,6 @@ class Cart extends Model {
         $stmt = $this->pdo->prepare("DELETE FROM user_products WHERE user_id = :userId AND product_id = :productId");
         $stmt->execute([':userId' => $userId, ':productId' => $productId]);
 
-        return $stmt;
     }
 
 

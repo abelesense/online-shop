@@ -17,7 +17,7 @@ spl_autoload_register(function ($class) {
 
 $app = new \App();
 
-$app->addGetRoute('/registration', UserController::class, 'getRegistrate');
+$app->addGetRoute('/registration', UserController::class, 'getRegistration');
 $app->addPostRoute('/registration', UserController::class, 'registrate');
 $app->addGetRoute('/login', UserController::class, 'getLogin');
 $app->addPostRoute('/login', UserController::class, 'login');
@@ -30,7 +30,7 @@ $app->addPostRoute('/decrease-product', CartController::class, 'decreaseProductQ
 $app->addPostRoute('/remove-product', CartController::class, 'removeProduct');
 $app->addGetRoute('/cart', UserProductController::class, 'showCart');
 $app->addGetRoute('/logout', UserController::class, 'logout');
-$app->addGetRoute('/update-cart', CartController::class, 'updateCart');
+$app->addPostRoute('/update-cart', CartController::class, 'updateCart');
 $app->handle();
 
 

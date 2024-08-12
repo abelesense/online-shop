@@ -103,13 +103,13 @@
                                 <?php
                                 $count = is_array($product['count']) ? $product['count']['count'] : $product['count'];
                                 ?>
-                                Количество: <?= htmlspecialchars((string)($count ?? '0')); ?>
+                                Количество: <span class="product-count"><?= htmlspecialchars((string)($count ?? '0')); ?></span>
 
                                 <form class="increase-product" action="/increase-product" method="POST" style="display: inline;" onsubmit="return false;">
                                     <input type="hidden" name="productId" value="<?= htmlspecialchars((string)($product['id'] ?? '')); ?>">
                                     <button type="submit">Увеличить на 1</button>
                                 </form>
-                                <form action="/decrease-product" method="POST" style="display: inline;">
+                                <form class="decrease-product" action="/decrease-product" method="POST" style="display: inline;" onsubmit="return false;">
                                     <input type="hidden" name="productId" value="<?= htmlspecialchars((string)($product['id'] ?? '')); ?>">
                                     <button type="submit">Уменьшить на 1</button>
                                 </form>
@@ -135,9 +135,27 @@
                 type: 'POST',
                 url: "/increase-product",
                 data: $(this).serialize(),
-                success: function (){
-                    var p = $('.increase-product');
-                    p.text(0);
+                success: function (data){
+                    var obj = JSON.parse(data);
+                    // Найдем элемент с количеством и обновим его
+                    form.closest('.card-footer').find('.product-count').text(obj.count);
+
+
+                }
+            })
+            return false;
+        })
+        var form2 = $('.decrease-product');
+        form2.submit(function () {
+            $.ajax({
+                type: 'POST',
+                url: "/decrease-product",
+                data: $(this).serialize(),
+                success: function (data){
+                    var obj = JSON.parse(data);
+                    // Найдем элемент с количеством и обновим его
+                    form.closest('.card-footer').find('.product-count').text(obj.count);
+
 
 
                 }
