@@ -91,27 +91,23 @@
                             Хит!
                         </div>
                         <?php
-                        $img_url = is_array($product->getImageUrl()) ? $product['image_url'][0] : $product['image_url'];
-                        $image_url = htmlspecialchars($img_url ?? 'default_image.jpg');
+                        $image_url = htmlspecialchars($product->getImage());
                         ?>
                         <img class="card-img-top" src="<?= $image_url; ?>" alt="Card image">
                         <div class="card-body">
-                            <p class="card-text text-muted"><?= htmlspecialchars($product['description'] ?? ''); ?></p>
-                            <a href="#"><h5 class="card-title"><?= htmlspecialchars($product-> ?? ''); ?></h5></a>
+                            <p class="card-text text-muted"><?= htmlspecialchars($product->getDescription()); ?></p>
+                            <a href="#"><h5 class="card-title"><?= htmlspecialchars($product->getName()); ?></h5></a>
                             <div class="card-footer">
-                                Цена: <?= htmlspecialchars($product['price'] ?? '0'); ?>$
+                                Цена: <?= htmlspecialchars($product->getPrice()); ?>$
                                 <br>
-                                <?php
-                                $count = is_array($product['count']) ? $product['count']['count'] : $product['count'];
-                                ?>
-                                Количество: <span class="product-count"><?= htmlspecialchars((string)($count ?? '0')); ?></span>
+                                Количество: <span class="product-count"><?= htmlspecialchars($product->getCount()); ?></span>
 
                                 <form class="increase-product" action="/increase-product" method="POST" style="display: inline;" onsubmit="return false;">
-                                    <input type="hidden" name="productId" value="<?= htmlspecialchars((string)($product['id'] ?? '')); ?>">
+                                    <input type="hidden" name="productId" value="<?= htmlspecialchars($product->getId()); ?>">
                                     <button type="submit">Увеличить на 1</button>
                                 </form>
                                 <form class="decrease-product" action="/decrease-product" method="POST" style="display: inline;" onsubmit="return false;">
-                                    <input type="hidden" name="productId" value="<?= htmlspecialchars((string)($product['id'] ?? '')); ?>">
+                                    <input type="hidden" name="productId" value="<?= htmlspecialchars($product->getId()); ?>">
                                     <button type="submit">Уменьшить на 1</button>
                                 </form>
                             </div>
@@ -129,38 +125,35 @@
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
-    $("document").ready(function() {
-        var form = $('.increase-product');
-        form.submit(function () {
+    $(document).ready(function() {
+        $('.increase-product').submit(function (e) {
+            e.preventDefault(); // предотвращаем стандартное поведение формы
+            var form = $(this);
             $.ajax({
                 type: 'POST',
-                url: "/increase-product",
-                data: $(this).serialize(),
+                url: form.attr('action'),
+                data: form.serialize(),
                 success: function (data){
                     var obj = JSON.parse(data);
                     // Найдем элемент с количеством и обновим его
                     form.closest('.card-footer').find('.product-count').text(obj.count);
-
-
                 }
-            })
-            return false;
-        })
-        var form2 = $('.decrease-product');
-        form2.submit(function () {
+            });
+        });
+
+        $('.decrease-product').submit(function (e) {
+            e.preventDefault(); // предотвращаем стандартное поведение формы
+            var form = $(this);
             $.ajax({
                 type: 'POST',
-                url: "/decrease-product",
-                data: $(this).serialize(),
+                url: form.attr('action'),
+                data: form.serialize(),
                 success: function (data){
                     var obj = JSON.parse(data);
                     // Найдем элемент с количеством и обновим его
                     form.closest('.card-footer').find('.product-count').text(obj.count);
-
-
-
                 }
-            })
-        })
+            });
+        });
     });
 </script>

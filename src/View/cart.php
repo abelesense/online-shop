@@ -1,39 +1,44 @@
 <div class="container">
     <h3>Cart</h3>
     <div class="card-deck">
-        <?php foreach ($products as $product) : ?>
-            <?php if ($product['count'] > 0) : ?>
-                <div class="card text-center" id="product-card-<?php echo htmlspecialchars($product['id']); ?>">
-                    <a href="#">
-                        <div class="card-header">
-                            Hit!
-                        </div>
-                        <img class="card-img-top" src="<?php echo htmlspecialchars($product['image_url']); ?>" alt="Card image">
-                        <div class="card-body">
-                            <p class="card-text text-muted"><?php echo htmlspecialchars($product["description"]); ?></p>
-                            <a href="#"><h5 class="card-title"><?php echo htmlspecialchars($product["name"]); ?></h5></a>
-                            <div class="card-footer">
-                                <p>Price: <?php echo htmlspecialchars($product["price"]); ?></p>
-                                <p>Count:
-                                    <button type="button" onclick="changeCartQuantity('<?php echo htmlspecialchars($product['id']); ?>', -1)">-</button>
-                                    <input type="number" id="cart-quantity-<?php echo htmlspecialchars($product['id']); ?>" value="<?php echo htmlspecialchars($product['count']); ?>" min="0" readonly>
-                                    <button type="button" onclick="changeCartQuantity('<?php echo htmlspecialchars($product['id']); ?>', 1)">+</button>
-                                </p>
-                                <form action="/update-cart" method="POST" style="display: none;">
-                                    <input type="hidden" name="product_id" value="<?php echo htmlspecialchars($product['id']); ?>">
-                                    <input type="hidden" id="hidden-cart-quantity-<?php echo htmlspecialchars($product['id']); ?>" name="quantity" value="<?php echo htmlspecialchars($product['count']); ?>">
-                                    <button type="submit" id="update-cart-<?php echo htmlspecialchars($product['id']); ?>">Update Cart</button>
-                                </form>
-                                <form action="/delete-product" method="POST" style="display: none;">
-                                    <input type="hidden" name="product_id" value="<?php echo htmlspecialchars($product['id']); ?>">
-                                    <button type="submit" id="delete-product-<?php echo htmlspecialchars($product['id']); ?>">Delete Product</button>
-                                </form>
+        <?php if (!empty($products)): ?>
+            <?php /** @var $product \Entity\Product */ ?>
+            <?php foreach ($products as $product): ?>
+                <?php if ($product->getCount() > 0) : ?>
+                    <div class="card text-center" id="product-card-<?php echo htmlspecialchars($product->getId()); ?>">
+                        <a href="#">
+                            <div class="card-header">
+                                Hit!
                             </div>
-                        </div>
-                    </a>
-                </div>
-            <?php endif; ?>
-        <?php endforeach; ?>
+                            <img class="card-img-top" src="<?php echo htmlspecialchars($product->getImage()); ?>" alt="Card image">
+                            <div class="card-body">
+                                <p class="card-text text-muted"><?php echo htmlspecialchars($product->getDescription()); ?></p>
+                                <a href="#"><h5 class="card-title"><?php echo htmlspecialchars($product->getName()); ?></h5></a>
+                                <div class="card-footer">
+                                    <p>Price: <?php echo htmlspecialchars($product->getPrice()); ?></p>
+                                    <p>Count:
+                                        <button type="button" onclick="changeCartQuantity('<?php echo htmlspecialchars($product->getId()); ?>', -1)">-</button>
+                                        <input type="number" id="cart-quantity-<?php echo htmlspecialchars($product->getId()); ?>" value="<?php echo htmlspecialchars($product->getCount()); ?>" min="0" readonly>
+                                        <button type="button" onclick="changeCartQuantity('<?php echo htmlspecialchars($product->getId()); ?>', 1)">+</button>
+                                    </p>
+                                    <form action="/update-cart" method="POST" style="display: none;">
+                                        <input type="hidden" name="product_id" value="<?php echo htmlspecialchars($product->getId()); ?>">
+                                        <input type="hidden" id="hidden-cart-quantity-<?php echo htmlspecialchars($product->getId()); ?>" name="quantity" value="<?php echo htmlspecialchars($product->getCount()); ?>">
+                                        <button type="submit" id="update-cart-<?php echo htmlspecialchars($product->getId()); ?>">Update Cart</button>
+                                    </form>
+                                    <form action="/delete-product" method="POST" style="display: none;">
+                                        <input type="hidden" name="product_id" value="<?php echo htmlspecialchars($product->getId()); ?>">
+                                        <button type="submit" id="delete-product-<?php echo htmlspecialchars($product->getId()); ?>">Delete Product</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                <?php endif; ?>
+            <?php endforeach; ?>
+        <?php else: ?>
+            <p>Your cart is empty.</p>
+        <?php endif; ?>
     </div>
 </div>
 
@@ -110,6 +115,6 @@
         hiddenQuantityInput.value = newQuantity;
 
         // Automatically submit the form to update the cart
-        document.getElementById('update-cart-' + productId).click();
+        document.getElementById('update-cart-' + productId).form.submit();
     }
 </script>

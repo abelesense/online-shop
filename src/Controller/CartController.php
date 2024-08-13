@@ -1,19 +1,15 @@
 <?php
 namespace Controller;
 
-use Model\Cart;
 use Model\UserProduct;
 
 class CartController{
 
     private UserProduct $userProductModel;
-    private Cart $cartModel;
-
     // Конструктор инициализирует модели UserProduct и Product
     public function __construct()
     {
         $this->userProductModel = new UserProduct();
-        $this->cartModel = new Cart();
     }
     public function getAddProductForm()
     {
@@ -60,19 +56,11 @@ class CartController{
         $userId = $_SESSION['userId'];
         $productId = $_POST['productId'];
 
-
         $existingProduct = $this->userProductModel->getOneByUserIdAndProductId($userId, $productId);
 
-        if ($existingProduct && $existingProduct->getCount() > 1) {
-            $this->userProductModel->decreaseProductCount($userId, $productId);
-            $_SESSION['success'] = "Количество продукта уменьшено на 1.";
-        } elseif ($existingProduct && $existingProduct->getCount() === 1) {
-            $this->userProductModel->delete($userId, $productId);
-            $_SESSION['success'] = "Продукт удален из корзины.";
-        } else {
-            $_SESSION['errors'][] = "Количество продукта не может быть меньше 0.";
+        if ($existingProduct) {
+            $this->userProductModel->decreaseProductCount($existingProduct, $userId, $productId);
         }
-
         $count = $this->userProductModel->countOfUserProducts($userId, $productId);
         $result = ['count' => $count];
         echo json_encode($result);
@@ -82,17 +70,22 @@ class CartController{
 
     public function updateCart()
     {
+            session_start();
+            if (!isset($_SESSION['userId'])) {
+                http_response_code(403);
+            }
+            $userId = $_SESSION['userId'];
             $productId = $_POST['product_id'];
             $quantity = $_POST['quantity'];
 
             if ($quantity > 0) {
-                if ($this->cartModel->updateCart($productId, $quantity)) {
+                if ($this->userProductModel->updateCart($userId, $productId, $quantity)) {
                     header('Location: /cart');
                 } else {
                     echo "Ошибка при обновлении корзины.";
                 }
             } else {
-                if ($this->cartModel->deleteProduct($productId)) {
+                if ($this->userProductModel->deleteProduct($userId, $productId)) {
                     header('Location: /cart');
                 } else {
                     echo "Ошибка при удалении товара из корзины.";

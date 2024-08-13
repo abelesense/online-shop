@@ -1,6 +1,6 @@
 <?php
 namespace Controller;
-//require_once '../Model/User.php';
+
 use Model\User;
 
 class UserController {
@@ -59,8 +59,8 @@ class UserController {
             $errors['email'] = "Email is not a valid email address";
         }
         $user = new User();
-        $count= $user->countWithEmail($email);
-        if ($count > 0) {
+        $count = $user->countWithEmail($email);
+        if ($count) {
             $errors['email'] = "Email already exists";
         }
 

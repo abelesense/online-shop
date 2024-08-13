@@ -2,8 +2,6 @@
 namespace Controller;
 use Model\UserProduct;
 use Model\Product;
-//require_once '../Model/Product.php';
-//require_once '../Model/UserProduct.php';
 
 class UserProductController
 {
@@ -33,10 +31,10 @@ class UserProductController
             // Создаем новый массив с добавленным количеством
             $updatedProducts = [];
             foreach ($products as $product) {
-                if (isset($productCounts[$product['id']])) {
-                    $product['count'] = $productCounts[$product['id']];
+                if (isset($productCounts[$product->getId()])) {
+                    $product->setCountInCart($productCounts[$product->getId()]);
                 } else {
-                    $product['count'] = 0; // или какое-то другое значение по умолчанию
+                    $product->setCountInCart(0); // или какое-то другое значение по умолчанию
                 }
                 $updatedProducts[] = $product;
             }

@@ -67,13 +67,13 @@ class UserProduct extends Model
         return $stmt->execute(['user_id' => $userId, 'product_id' => $productId]);
     }
 
-    public function decreaseProductCount(int $userId, int $productId): bool
+    public function decreaseProductCount($existingProduct, int $userId, int $productId): bool
     {
-        $existingProduct = $this->getOneByUserIdAndProductId($userId, $productId);
-        if ($existingProduct && $existingProduct['count'] > 1) {
+
+        if ($existingProduct->getCount() > 1) {
             $stmt = $this->pdo->prepare("UPDATE user_products SET count = count - 1 WHERE user_id = :user_id AND product_id = :product_id");
             return $stmt->execute(['user_id' => $userId, 'product_id' => $productId]);
-        } elseif ($existingProduct && $existingProduct['count'] == 1) {
+        } elseif ($existingProduct->getCount() == 1) {
             $this->delete($userId, $productId);
             return true;
         }
@@ -86,7 +86,7 @@ class UserProduct extends Model
         $stmt->execute(['user_id' => $userId, 'product_id' => $productId]);
     }
 
-    public function countOfUserProducts(int $userId, $productId): int
+    public function countOfUserProducts(int $userId, int $productId): int
     {
         $stmt = $this->pdo->prepare("SELECT count FROM user_products WHERE user_id = :user_id AND product_id = :product_id");
         $stmt->execute(['user_id' => $userId, 'product_id' => $productId]);
@@ -97,9 +97,7 @@ class UserProduct extends Model
         return $result;
     }
 
-    public function updateCart($productId, $quantity) {
-        session_start();
-        $userId = $_SESSION['userId'];
+    public function updateCart(int $userId, int $productId, int $quantity): bool {
 
         if ($quantity > 0) {
             $stmt = $this->pdo->prepare("UPDATE user_products SET count = :quantity WHERE user_id = :userId AND product_id = :productId");
@@ -108,15 +106,15 @@ class UserProduct extends Model
             $stmt = $this->pdo->prepare("DELETE FROM user_products WHERE user_id = :userId AND product_id = :productId");
             $stmt->execute([':userId' => $userId, ':productId' => $productId]);
         }
+        return true;
 
     }
 
-    public function deleteProduct($productId) {
-        session_start();
-        $userId = $_SESSION['userId'];
+    public function deleteProduct(int $userId, int $productId): bool {
 
         $stmt = $this->pdo->prepare("DELETE FROM user_products WHERE user_id = :userId AND product_id = :productId");
         $stmt->execute([':userId' => $userId, ':productId' => $productId]);
+        return true;
 
     }
 

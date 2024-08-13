@@ -1,6 +1,6 @@
 <?php
 namespace Controller;
-//require_once __DIR__ . '/../Model/Product.php';
+
 use Model\Product;
 use Model\UserProduct;
 
@@ -28,14 +28,18 @@ class ProductController
 
             foreach ($products as $product) {
                 $userProduct = $this->userProduct->getOneByUserIdAndProductId($userId, $product->getId());
-                $product->setCountInCart($userProduct->getCount());
+                if ($userProduct !== null) {
+                    $product->setCountInCart($userProduct->getCount());
+                } else {
+                    $product->setCountInCart(0); // Значение по умолчанию
+                }
             }
             unset($product);
             // Передача данных в представление
             require_once __DIR__ . '/../View/catalog.php';
         } else {
             http_response_code(403);
-            require_once __DIR__ . '/../View/403.php';
+            require_once __DIR__ . '/../View/404.php';
         }
     }
 

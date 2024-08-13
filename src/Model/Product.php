@@ -44,5 +44,16 @@ class Product extends Model
         $stmt->execute($productIds);
 
         $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $products = [];
+        foreach ($result as $product) {
+            $products[] = new \Entity\Product(
+                $product['id'],
+                $product['name'],
+                $product['description'],
+                $product['price'],
+                $product['image_url']
+            );
+        }
+        return $products;
     }
 }
