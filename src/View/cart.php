@@ -40,6 +40,13 @@
             <p>Your cart is empty.</p>
         <?php endif; ?>
     </div>
+    <?php if (!empty($products)): ?>
+        <div class="text-right mt-3">
+            <form action="/checkout" method="GET">
+                <button type="submit" class="btn btn-primary">Checkout</button>
+            </form>
+        </div>
+    <?php endif; ?>
 </div>
 
 <style>
