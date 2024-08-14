@@ -7,9 +7,7 @@
                 <?php if ($product->getCount() > 0) : ?>
                     <div class="card text-center" id="product-card-<?php echo htmlspecialchars($product->getId()); ?>">
                         <a href="#">
-                            <div class="card-header">
-                                Hit!
-                            </div>
+                            <div class="card-header">Hit!</div>
                             <img class="card-img-top" src="<?php echo htmlspecialchars($product->getImage()); ?>" alt="Card image">
                             <div class="card-body">
                                 <p class="card-text text-muted"><?php echo htmlspecialchars($product->getDescription()); ?></p>
@@ -21,15 +19,6 @@
                                         <input type="number" id="cart-quantity-<?php echo htmlspecialchars($product->getId()); ?>" value="<?php echo htmlspecialchars($product->getCount()); ?>" min="0" readonly>
                                         <button type="button" onclick="changeCartQuantity('<?php echo htmlspecialchars($product->getId()); ?>', 1)">+</button>
                                     </p>
-                                    <form action="/update-cart" method="POST" style="display: none;">
-                                        <input type="hidden" name="product_id" value="<?php echo htmlspecialchars($product->getId()); ?>">
-                                        <input type="hidden" id="hidden-cart-quantity-<?php echo htmlspecialchars($product->getId()); ?>" name="quantity" value="<?php echo htmlspecialchars($product->getCount()); ?>">
-                                        <button type="submit" id="update-cart-<?php echo htmlspecialchars($product->getId()); ?>">Update Cart</button>
-                                    </form>
-                                    <form action="/delete-product" method="POST" style="display: none;">
-                                        <input type="hidden" name="product_id" value="<?php echo htmlspecialchars($product->getId()); ?>">
-                                        <button type="submit" id="delete-product-<?php echo htmlspecialchars($product->getId()); ?>">Delete Product</button>
-                                    </form>
                                 </div>
                             </div>
                         </a>
@@ -40,14 +29,21 @@
             <p>Your cart is empty.</p>
         <?php endif; ?>
     </div>
+
     <?php if (!empty($products)): ?>
         <div class="text-right mt-3">
-            <form action="/checkout" method="GET">
+            <form action="/checkout" method="POST">
+                <?php foreach ($products as $product): ?>
+                    <input type="hidden" name="products[<?php echo htmlspecialchars($product->getId()); ?>][name]" value="<?php echo htmlspecialchars($product->getName()); ?>">
+                    <input type="hidden" name="products[<?php echo htmlspecialchars($product->getId()); ?>][price]" value="<?php echo htmlspecialchars($product->getPrice()); ?>">
+                    <input type="hidden" name="products[<?php echo htmlspecialchars($product->getId()); ?>][count]" value="<?php echo htmlspecialchars($product->getCount()); ?>">
+                <?php endforeach; ?>
                 <button type="submit" class="btn btn-primary">Checkout</button>
             </form>
         </div>
     <?php endif; ?>
 </div>
+
 
 <style>
     body {

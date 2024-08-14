@@ -2,57 +2,86 @@
     <div class="title">
         <h2>Product Order Form</h2>
     </div>
-    <div class="d-flex">
-        <form action="" method="">
-            <label>
-                <span>Street Address <span class="required">*</span></span>
-                <input type="text" name="houseadd" placeholder="House number and street name" required>
-            </label>
-            <label>
-                <span>City <span class="required">*</span></span>
-                <input type="text" name="city">
-            </label>
-            <label>
-                <span>Phone <span class="required">*</span></span>
-                <input type="tel" name="city">
-            </label>
-        </form>
-        <div class="Yorder">
-            <table>
-                <tr>
-                    <th colspan="2">Your order</th>
-                </tr>
-                <tr>
-                    <td>Product Name x 2(Qty)</td>
-                    <td>$88.00</td>
-                </tr>
-                <tr>
-                    <td>Subtotal</td>
-                    <td>$88.00</td>
-                </tr>
-                <tr>
-                    <td>Shipping</td>
-                    <td>Free shipping</td>
-                </tr>
-            </table><br>
-            <div>
-                <input type="radio" name="dbt" value="dbt" checked> Direct Bank Transfer
-            </div>
-            <p>
-                Make your payment directly into our bank account. Please use your Order ID as the payment reference. Your order will not be shipped until the funds have cleared in our account.
-            </p>
-            <div>
-                <input type="radio" name="dbt" value="cd"> Cash on Delivery
-            </div>
-            <div>
-                <input type="radio" name="dbt" value="cd"> Paypal <span>
-      <img src="https://www.logolynx.com/images/logolynx/c3/c36093ca9fb6c250f74d319550acac4d.jpeg" alt="" width="50">
-      </span>
-            </div>
-            <button type="button">Place Order</button>
-        </div><!-- Yorder -->
-    </div>
+    <?php if (!empty($_POST['products'])): ?>
+        <div class="d-flex">
+            <form action="/checkout" method="POST">
+                <label>
+                    <span>Street Address <span class="required">*</span></span>
+                    <?php if(isset($errors['house_address'])): ?>
+                    <label><?php echo $errors['house_address']; ?><label>
+                            <?php endif; ?>
+                    <input type="text" name="house_address" placeholder="House number and street name" required>
+                </label>
+                <label>
+                    <span>City <span class="required">*</span></span>
+                    <?php if(isset($errors['city'])): ?>
+                    <label><?php echo $errors['city']; ?><label>
+                            <?php endif; ?>
+                    <input type="text" name="city" required>
+                </label>
+                <label>
+                    <span>Phone <span class="required">*</span></span>
+                    <?php if(isset($errors['phone'])): ?>
+                    <label><?php echo $errors['phone']; ?><label>
+                            <?php endif; ?>
+                    <input type="tel" name="phone" required>
+                </label>
+
+                <div class="Yorder">
+                    <table>
+                        <tr>
+                            <th colspan="2">Your order</th>
+                        </tr>
+                        <?php
+                        $totalAmount = 0; // Инициализация переменной для общей суммы
+
+                        foreach ($_POST['products'] as $productId => $productData):
+                            $productTotal = $productData['count'] * $productData['price'];
+                            $totalAmount += $productTotal; // Добавляем стоимость товара к общей сумме
+                            ?>
+                            <tr>
+                                <td><?php echo htmlspecialchars($productData['name']) . ' x ' . htmlspecialchars($productData['count']); ?></td>
+                                <td><?php echo htmlspecialchars($productTotal); ?></td>
+                            </tr>
+                            <input type="hidden" name="products[<?php echo htmlspecialchars($productId); ?>][name]" value="<?php echo htmlspecialchars($productData['name']); ?>">
+                            <input type="hidden" name="products[<?php echo htmlspecialchars($productId); ?>][price]" value="<?php echo htmlspecialchars($productData['price']); ?>">
+                            <input type="hidden" name="products[<?php echo htmlspecialchars($productId); ?>][count]" value="<?php echo htmlspecialchars($productData['count']); ?>">
+                        <?php endforeach; ?>
+                        <tr>
+                            <td>Shipping</td>
+                            <td>Free shipping</td>
+                        </tr>
+                        <tr>
+                            <th>Total Amount</th>
+                            <th><?php echo htmlspecialchars($totalAmount); ?></th>
+                        </tr>
+                    </table><br>
+                    <!-- Скрытое поле для передачи общей суммы -->
+                    <input type="hidden" name="total_amount" value="<?php echo htmlspecialchars($totalAmount); ?>">
+
+                    <div>
+                        <input type="radio" name="payment_method" value="dbt" checked> Direct Bank Transfer
+                    </div>
+                    <div>
+                        <input type="radio" name="payment_method" value="cod"> Cash on Delivery
+                    </div>
+                    <div>
+                        <input type="radio" name="payment_method" value="paypal"> Paypal
+                        <span>
+                            <img src="https://www.logolynx.com/images/logolynx/c3/c36093ca9fb6c250f74d319550acac4d.jpeg" alt="PayPal" width="50">
+                        </span>
+                    </div>
+                    <button type="submit">Place Order</button>
+                </div>
+            </form>
+        </div>
+    <?php else: ?>
+        <p>No products available.</p>
+    <?php endif; ?>
 </div>
+
+
+
 
 <style>
     @import url('https://fonts.googleapis.com/css?family=Roboto+Condensed:400,700');
