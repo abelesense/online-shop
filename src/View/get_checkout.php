@@ -1,84 +1,84 @@
 <div class="container">
     <div class="title">
-        <h2>Product Order Form</h2>
+        <h2>Форма заказа</h2>
     </div>
-    <?php if (!empty($_POST['products'])): ?>
-        <div class="d-flex">
-            <form action="/checkout" method="POST">
-                <label>
-                    <span>Street Address <span class="required">*</span></span>
-                    <?php if(isset($errors['house_address'])): ?>
-                    <label><?php echo $errors['house_address']; ?><label>
-                            <?php endif; ?>
-                    <input type="text" name="house_address" placeholder="House number and street name" required>
-                </label>
-                <label>
-                    <span>City <span class="required">*</span></span>
-                    <?php if(isset($errors['city'])): ?>
-                    <label><?php echo $errors['city']; ?><label>
-                            <?php endif; ?>
-                    <input type="text" name="city" required>
-                </label>
-                <label>
-                    <span>Phone <span class="required">*</span></span>
-                    <?php if(isset($errors['phone'])): ?>
-                    <label><?php echo $errors['phone']; ?><label>
-                            <?php endif; ?>
-                    <input type="tel" name="phone" required>
-                </label>
+    <?php if (!empty($products)): ?>
+        <form action="/checkout" method="POST">
+            <label>
+                <span>Адрес <span class="required">*</span></span>
+                <?php if (isset($errors['house_address'])): ?>
+                    <div><?php echo $errors['house_address']; ?></div>
+                <?php endif; ?>
+                <input type="text" name="house_address" placeholder="Номер дома и улица" required>
+            </label>
+            <label>
+                <span>Город <span class="required">*</span></span>
+                <?php if (isset($errors['city'])): ?>
+                    <div><?php echo $errors['city']; ?></div>
+                <?php endif; ?>
+                <input type="text" name="city" required>
+            </label>
+            <label>
+                <span>Телефон <span class="required">*</span></span>
+                <?php if (isset($errors['phone'])): ?>
+                    <div><?php echo $errors['phone']; ?></div>
+                <?php endif; ?>
+                <input type="tel" name="phone" required>
+            </label>
 
-                <div class="Yorder">
-                    <table>
-                        <tr>
-                            <th colspan="2">Your order</th>
-                        </tr>
+            <div class="Yorder">
+                <table>
+                    <tr>
+                        <th colspan="2">Ваш заказ</th>
+                    </tr>
+                    <?php
+                    $totalAmount = 0; // Инициализация переменной для общей суммы
+                    ?>
+                    <?php foreach ($products as $product): ?>
                         <?php
-                        $totalAmount = 0; // Инициализация переменной для общей суммы
-
-                        foreach ($_POST['products'] as $productId => $productData):
-                            $productTotal = $productData['count'] * $productData['price'];
-                            $totalAmount += $productTotal; // Добавляем стоимость товара к общей сумме
-                            ?>
-                            <tr>
-                                <td><?php echo htmlspecialchars($productData['name']) . ' x ' . htmlspecialchars($productData['count']); ?></td>
-                                <td><?php echo htmlspecialchars($productTotal); ?></td>
-                            </tr>
-                            <input type="hidden" name="products[<?php echo htmlspecialchars($productId); ?>][name]" value="<?php echo htmlspecialchars($productData['name']); ?>">
-                            <input type="hidden" name="products[<?php echo htmlspecialchars($productId); ?>][price]" value="<?php echo htmlspecialchars($productData['price']); ?>">
-                            <input type="hidden" name="products[<?php echo htmlspecialchars($productId); ?>][count]" value="<?php echo htmlspecialchars($productData['count']); ?>">
-                        <?php endforeach; ?>
+                        $productTotal = $product->getCount() * $product->getPrice();
+                        $totalAmount += $productTotal; // Добавляем стоимость товара к общей сумме
+                        ?>
                         <tr>
-                            <td>Shipping</td>
-                            <td>Free shipping</td>
+                            <td><?php echo htmlspecialchars($product->getName()) . ' x ' . htmlspecialchars($product->getCount()); ?></td>
+                            <td><?php echo htmlspecialchars($productTotal); ?></td>
                         </tr>
-                        <tr>
-                            <th>Total Amount</th>
-                            <th><?php echo htmlspecialchars($totalAmount); ?></th>
-                        </tr>
-                    </table><br>
-                    <!-- Скрытое поле для передачи общей суммы -->
-                    <input type="hidden" name="total_amount" value="<?php echo htmlspecialchars($totalAmount); ?>">
+                        <input type="hidden" name="products[<?php echo htmlspecialchars($product->getId()); ?>][name]" value="<?php echo htmlspecialchars($product->getName()); ?>">
+                        <input type="hidden" name="products[<?php echo htmlspecialchars($product->getId()); ?>][price]" value="<?php echo htmlspecialchars($product->getPrice()); ?>">
+                        <input type="hidden" name="products[<?php echo htmlspecialchars($product->getId()); ?>][count]" value="<?php echo htmlspecialchars($product->getCount()); ?>">
+                    <?php endforeach; ?>
+                    <tr>
+                        <td>Доставка</td>
+                        <td>Бесплатная доставка</td>
+                    </tr>
+                    <tr>
+                        <th>Итого</th>
+                        <th><?php echo htmlspecialchars($totalAmount); ?></th>
+                    </tr>
+                </table><br>
+                <!-- Скрытое поле для передачи общей суммы -->
+                <input type="hidden" name="total_amount" value="<?php echo htmlspecialchars($totalAmount); ?>">
 
-                    <div>
-                        <input type="radio" name="payment_method" value="dbt" checked> Direct Bank Transfer
-                    </div>
-                    <div>
-                        <input type="radio" name="payment_method" value="cod"> Cash on Delivery
-                    </div>
-                    <div>
-                        <input type="radio" name="payment_method" value="paypal"> Paypal
-                        <span>
-                            <img src="https://www.logolynx.com/images/logolynx/c3/c36093ca9fb6c250f74d319550acac4d.jpeg" alt="PayPal" width="50">
-                        </span>
-                    </div>
-                    <button type="submit">Place Order</button>
+                <div>
+                    <input type="radio" name="payment_method" value="dbt" checked> Банковский перевод
                 </div>
-            </form>
-        </div>
+                <div>
+                    <input type="radio" name="payment_method" value="cod"> Наложенный платеж
+                </div>
+                <div>
+                    <input type="radio" name="payment_method" value="paypal"> Paypal
+                    <span>
+                        <img src="https://www.logolynx.com/images/logolynx/c3/c36093ca9fb6c250f74d319550acac4d.jpeg" alt="PayPal" width="50">
+                    </span>
+                </div>
+                <button type="submit">Оформить заказ</button>
+            </div>
+        </form>
     <?php else: ?>
-        <p>No products available.</p>
+        <p>Товары отсутствуют.</p>
     <?php endif; ?>
 </div>
+
 
 
 

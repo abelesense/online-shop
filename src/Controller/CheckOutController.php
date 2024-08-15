@@ -45,9 +45,9 @@ class CheckOutController
 
     public function registrateOrder()
     {
+        session_start();
         $errors = $this->validateOrderForm($_POST);
         if (empty($errors)) {
-            session_start();
             $userId = $_SESSION['user_id'];
             $street = $_POST['house_address'];
             $city = $_POST['city'];
@@ -57,13 +57,11 @@ class CheckOutController
             $order = new Orders();
             $order->insert($city, $street, $phone, $totalAmount, $userId);
 
-            header('Location: /checkout');
-
 
         }
 
 
-        require_once __DIR__ . '/../View/get_registration.php';
+        require_once __DIR__ . '/../View/get_checkout.php';
 
     }
 }

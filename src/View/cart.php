@@ -33,7 +33,9 @@
     <?php if (!empty($products)): ?>
         <div class="text-right mt-3">
             <form action="/checkout" method="POST">
-                <?php foreach ($products as $product): ?>
+                <button type="submit" class="btn btn-primary">Checkout</button>
+            </form>
+            <?php foreach ($products as $product): ?>
                     <input type="hidden" name="products[<?php echo htmlspecialchars($product->getId()); ?>][name]" value="<?php echo htmlspecialchars($product->getName()); ?>">
                     <input type="hidden" name="products[<?php echo htmlspecialchars($product->getId()); ?>][price]" value="<?php echo htmlspecialchars($product->getPrice()); ?>">
                     <input type="hidden" name="products[<?php echo htmlspecialchars($product->getId()); ?>][count]" value="<?php echo htmlspecialchars($product->getCount()); ?>">

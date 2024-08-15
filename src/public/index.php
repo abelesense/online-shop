@@ -31,8 +31,8 @@ $app->addPostRoute('/remove-product', CartController::class, 'removeProduct');
 $app->addGetRoute('/cart', UserProductController::class, 'showCart');
 $app->addGetRoute('/logout', UserController::class, 'logout');
 $app->addPostRoute('/update-cart', CartController::class, 'updateCart');
-$app->addPostRoute('/checkout', CheckOutController::class, 'getCheckOut');
-$app->addPostRoute('checkout', CheckOutController::class, 'registrateOrder');
+$app->addGetRoute('/checkout', CheckOutController::class, 'getCheckOut');
+$app->addPostRoute('/checkout', CheckOutController::class, 'registrateOrder');
 $app->handle();
 
 
