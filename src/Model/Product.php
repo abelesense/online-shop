@@ -56,4 +56,12 @@ class Product extends Model
         }
         return $products;
     }
+
+    public function getPrice(int $productId): int
+    {
+        $stmt = $this->pdo->prepare("SELECT price FROM products WHERE id = :productId");
+        $stmt->execute(['productId' => $productId]);
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $result['price'];
+    }
 }

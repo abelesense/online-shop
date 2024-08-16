@@ -1,3 +1,4 @@
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
 <div class="container">
     <h3>Cart</h3>
     <div class="card-deck">
@@ -32,15 +33,12 @@
 
     <?php if (!empty($products)): ?>
         <div class="text-right mt-3">
-            <form action="/checkout" method="POST">
-                <button type="submit" class="btn btn-primary">Checkout</button>
-            </form>
+            <a href="/checkout" class="btn btn-primary">Checkout</a>
             <?php foreach ($products as $product): ?>
                     <input type="hidden" name="products[<?php echo htmlspecialchars($product->getId()); ?>][name]" value="<?php echo htmlspecialchars($product->getName()); ?>">
                     <input type="hidden" name="products[<?php echo htmlspecialchars($product->getId()); ?>][price]" value="<?php echo htmlspecialchars($product->getPrice()); ?>">
                     <input type="hidden" name="products[<?php echo htmlspecialchars($product->getId()); ?>][count]" value="<?php echo htmlspecialchars($product->getCount()); ?>">
                 <?php endforeach; ?>
-                <button type="submit" class="btn btn-primary">Checkout</button>
             </form>
         </div>
     <?php endif; ?>
