@@ -97,7 +97,7 @@ class CheckOutController
             $orderInfo = $order->selectUserOrder($userId);
             $orderData = [
                 'ids' => [],
-                'user_ids' => [],
+//                'user_ids' => [],
                 'product_id'=>[],
                 'count' => [],
                 'price' => [],
@@ -105,7 +105,7 @@ class CheckOutController
 
             foreach ($orderInfo as $order) {
                 $orderData['ids'][] = $order->getId();
-                $orderData['user_ids'][] = $order->getUserId();
+//                $orderData['user_ids'][] = $order->getUserId();
             }
             $userProduct = new UserProduct();
             $orderDataFromUserProducts = $userProduct->takeUserProducts($userId);

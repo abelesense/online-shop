@@ -74,7 +74,7 @@ class UserProduct extends Model
             $stmt = $this->pdo->prepare("UPDATE user_products SET count = count - 1 WHERE user_id = :user_id AND product_id = :product_id");
             return $stmt->execute(['user_id' => $userId, 'product_id' => $productId]);
         } elseif ($existingProduct->getCount() == 1) {
-            $this->delete($userId, $productId);
+            $this->deleteProduct($userId, $productId);
             return true;
         }
         return false;
