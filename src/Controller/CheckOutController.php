@@ -132,6 +132,8 @@ class CheckOutController
 
                 $orderItemsModel->insert($orderId, $productId, $count, $price);
             }
+
+            $userProduct = $this->userProductModel->delete($userId);
         }
 
 

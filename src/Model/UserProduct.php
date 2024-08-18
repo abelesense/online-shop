@@ -80,10 +80,11 @@ class UserProduct extends Model
         return false;
     }
 
-    public function delete(int $userId, int $productId): void
+    public function delete(int $userId): bool
     {
-        $stmt = $this->pdo->prepare("DELETE FROM user_products WHERE user_id = :user_id AND product_id = :product_id");
-        $stmt->execute(['user_id' => $userId, 'product_id' => $productId]);
+        $stmt = $this->pdo->prepare("DELETE FROM user_products WHERE user_id = :user_id");
+        $stmt->execute(['user_id' => $userId]);
+        return true;
     }
 
     public function countOfUserProducts(int $userId, int $productId): int
