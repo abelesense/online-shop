@@ -6,19 +6,38 @@ use Model\OrderItems;
 use Model\Orders;
 use Model\Product;
 use Model\UserProduct;
+use Request\Request;
 
-class CheckOutController
+class OrderController
 {
-    private UserProduct $userProductModel;
-    private Product $productModel;
     private Orders $orderModel;
     private OrderItems $orderItemModel;
+    private Product $productModel;
+    private UserProduct $userProductModel;
     public function __construct()
     {
         $this->userProductModel = new UserProduct();
         $this->productModel = new Product();
         $this->orderModel = new Orders();
         $this->orderItemModel = new OrderItems();
+    }
+
+    public function getOrder()
+    {
+        session_start();
+        $userId = $_SESSION['userId'];
+        //Проверка авторизован ли пользователь
+        if(isset($_SESSION['userId'])) {
+            //Получение списка продуктов из модели
+            $orderId = $this->orderModel->getOrderId($userId);
+            $orderData = $this->orderItemModel->getUserOrderItems($orderId);
+
+            // Передача данных в представление
+            require_once "../View/order.php";;
+        } else {
+            http_response_code(403);
+            require_once __DIR__ . '/../View/404.php';
+        }
     }
 
     public function getCheckOut()
@@ -55,16 +74,17 @@ class CheckOutController
         }
     }
 
-    public function registrateOrder()
+    public function registrateOrder(Request $request)
     {
-        $errors = $this->validateOrderForm($_POST);
+        $errors = $this->validateOrderForm($request);
         if (empty($errors)) {
             session_start();
+            $data = $request->getData();
             $userId = $_SESSION['userId'];
-            $street = $_POST['house_address'];
-            $city = $_POST['city'];
-            $phone = $_POST['phone'];
-            $totalAmount = $_POST['total_amount'];
+            $street = $data['house_address'];
+            $city = $data['city'];
+            $phone = $data['phone'];
+            $totalAmount = $data['total_amount'];
 
             $order = $this->orderModel->create($city, $street, $phone, $userId, $totalAmount);
 
@@ -101,9 +121,10 @@ class CheckOutController
 
     }
 
-    public function validateOrderForm(array $data): array
+    public function validateOrderForm(Request $request): array
     {
         $errors = [];
+        $data = $request->getData();
         $street = $data['house_address'];
         if (empty($street)) {
             $errors['street'] = "Street cannot be empty";
@@ -132,4 +153,5 @@ class CheckOutController
         }
         return $errors;
     }
+
 }

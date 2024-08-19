@@ -1,6 +1,7 @@
 <?php
 
 use Controller\CheckOutController;
+use Controller\OrderController;
 use Controller\UserController;
 use Controller\ProductController;
 use Controller\CartController;
@@ -31,8 +32,9 @@ $app->addPostRoute('/remove-product', CartController::class, 'removeProduct');
 $app->addGetRoute('/cart', UserProductController::class, 'showCart');
 $app->addGetRoute('/logout', UserController::class, 'logout');
 $app->addPostRoute('/update-cart', CartController::class, 'updateCart');
-$app->addGetRoute('/checkout', CheckOutController::class, 'getCheckOut');
-$app->addPostRoute('/checkout', CheckOutController::class, 'registrateOrder');
+$app->addGetRoute('/checkout', OrderController::class, 'getCheckOut');
+$app->addPostRoute('/checkout', OrderController::class, 'registrateOrder');
+$app->addGetRoute('/my_orders', OrderController::class, 'getOrder');
 $app->handle();
 
 

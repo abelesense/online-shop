@@ -2,6 +2,7 @@
 namespace Controller;
 
 use Model\User;
+use Request\Request;
 
 class UserController {
 
@@ -20,19 +21,33 @@ class UserController {
         require_once '../View/get_registration.php';
     }
 
-    private function containsNumbers(string $string):bool  {
-        // Перебираем каждый символ в строке
-        for ($i = 0; $i < strlen($string); $i++) {
-            // Если текущий символ является числом, возвращаем true
-            if (is_numeric($string[$i]) && $string[$i] != ' ') {
-                return true;
-            }
+    public function registrate(Request $request)
+    {
+        $errors = $this->validateRegistration($request);
+        if (empty($errors)) {
+            $data = $request->getData();
+            $name = $data['name'];
+            $email = $data['email'];
+            $password = $data['psw'];
+            $passwordHash = password_hash($password, PASSWORD_DEFAULT);
+
+            $user = new User();
+            $user->insert($name, $email, $passwordHash);
+
+            header('Location: /login');
+
+
         }
-        // Если ни один символ не является числом, возвращаем false
-        return false;
+
+
+        require_once __DIR__ . '/../View/get_registration.php';
+
+
     }
-    public function validateRegistration (array $data): array{
+    public function validateRegistration (Request $request): array
+    {
         $errors = [];
+        $data = $request->getData();
         $name = $data['name'];
         if (empty($name)) {
             $errors['name'] = "Name cannot be empty";
@@ -76,54 +91,29 @@ class UserController {
         return $errors;
 
     }
-    public function registrate()
-    {
-        $errors = $this->validateRegistration($_POST);
-        if (empty($errors)) {
-            $name = $_POST['name'];
-            $email = $_POST['email'];
-            $password = $_POST['psw'];
-            $passwordHash = password_hash($password, PASSWORD_DEFAULT);
 
-            $user = new User();
-            $user->insert($name, $email, $passwordHash);
-
-            header('Location: /login');
-
-
+    private function containsNumbers(string $string):bool  {
+        // Перебираем каждый символ в строке
+        for ($i = 0; $i < strlen($string); $i++) {
+            // Если текущий символ является числом, возвращаем true
+            if (is_numeric($string[$i]) && $string[$i] != ' ') {
+                return true;
+            }
         }
-
-
-        require_once __DIR__ . '/../View/get_registration.php';
-
-
+        // Если ни один символ не является числом, возвращаем false
+        return false;
     }
 
-    public function validateLogin(array $data): array
+    public function login(Request $request)
     {
-        $errors = [];
-        if (isset($data["username"])) {
-            $email = $data["username"];
-        } else {
-            $errors["username"] = "Username is required";
-        }
-        if (isset($data["password"])) {
-            $password = $data["password"];
-        } else {
-            $errors["password"] = "Password is required";
-        }
-        return $errors;
-    }
-
-    public function login()
-    {
-        $this->validateLogin($_POST);
+        $this->validateLogin($request);
         $userModel = new User();
-        $user = $userModel->getUserByEmail($_POST["username"]);
+        $data = $request->getData();
+        $user = $userModel->getUserByEmail($data["username"]);
 
         //Если нет ошибок, выполняем подключение к БД и проверку пользователя
         if (!empty($user)) {
-            $password = $_POST['password'];
+            $password = $data['password'];
             $passwordHash = $user->getPassword();
 
 
@@ -141,6 +131,22 @@ class UserController {
 
         }
         require_once __DIR__ . '/../View/get_login.php';
+    }
+    public function validateLogin(Request $request): array
+    {
+        $data = $request->getData();
+        $errors = [];
+        if (isset($data["username"])) {
+            $email = $data["username"];
+        } else {
+            $errors["username"] = "Username is required";
+        }
+        if (isset($data["password"])) {
+            $password = $data["password"];
+        } else {
+            $errors["password"] = "Password is required";
+        }
+        return $errors;
     }
 
     public function logout()

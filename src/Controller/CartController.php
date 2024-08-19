@@ -2,6 +2,7 @@
 namespace Controller;
 
 use Model\UserProduct;
+use Request\Request;
 
 class CartController{
 
@@ -16,9 +17,11 @@ class CartController{
         require_once "../View/add-product.php";
     }
 
-    public function increaseProductQuantity()
+    public function increaseProductQuantity(Request $request)
     {
         session_start();
+
+        $data = $request->getData();
 
         if (!isset($_SESSION['userId'])) {
             http_response_code(403);
@@ -27,7 +30,7 @@ class CartController{
         }
 
         $userId = $_SESSION['userId'];
-        $productId = $_POST['productId'];
+        $productId = $data['productId'];
 
         $existingProduct = $this->userProductModel->getOneByUserIdAndProductId($userId, $productId);
 
@@ -43,9 +46,10 @@ class CartController{
 
     }
 
-    public function decreaseProductQuantity()
+    public function decreaseProductQuantity(Request $request)
     {
         session_start();
+        $data = $request->getData();
 
         if (!isset($_SESSION['userId'])) {
             http_response_code(403);
@@ -54,7 +58,7 @@ class CartController{
         }
 
         $userId = $_SESSION['userId'];
-        $productId = $_POST['productId'];
+        $productId = $data['productId'];
 
         $existingProduct = $this->userProductModel->getOneByUserIdAndProductId($userId, $productId);
 
@@ -68,15 +72,16 @@ class CartController{
 
     }
 
-    public function updateCart()
+    public function updateCart(Request $request)
     {
             session_start();
+            $data = $request->getData();
             if (!isset($_SESSION['userId'])) {
                 http_response_code(403);
             }
             $userId = $_SESSION['userId'];
-            $productId = $_POST['product_id'];
-            $quantity = $_POST['quantity'];
+            $productId = $data['product_id'];
+            $quantity = $data['quantity'];
 
             if ($quantity > 0) {
                 if ($this->userProductModel->updateCart($userId, $productId, $quantity)) {

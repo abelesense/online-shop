@@ -3,6 +3,7 @@
     <div class="title">
         <h2>Форма заказа</h2>
     </div>
+    <a href="/my_orders">Мои заказы</a>
     <?php if (!empty($products)): ?>
         <form action="/checkout" method="POST">
             <label>

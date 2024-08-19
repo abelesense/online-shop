@@ -14,4 +14,24 @@ class OrderItems extends Model
             ':price' => $price,
         ]);
     }
+
+    public function getUserOrderItems(int $orderId): array
+    {
+        $stmt = $this->pdo->prepare("SELECT * FROM order_items WHERE order_id = :orderId");
+        $stmt->execute([':orderId' => $orderId]);
+        $result = $stmt->fetchAll();
+        $OrderProductObjects = [];
+        foreach ($result as $product) {
+            $OrderProductObjects[] = new \Entity\OrderItems(
+                $product['id'],
+                $product['order_id'],
+                $product['product_id'],
+                $product['count'],
+                $product['price']
+            );
+        }
+
+        return $OrderProductObjects;
+
+    }
 }

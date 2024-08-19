@@ -22,7 +22,8 @@ class App
             $method = $route['method'];
 
             $controller = new $class();
-            $controller->$method();
+            $request = new \Request\Request($requestUri, $requestMethod, $_POST);
+            $controller->$method($request);
         } else {
             http_response_code(404);
             require_once 'View/404.php';

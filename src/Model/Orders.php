@@ -18,6 +18,14 @@ class Orders extends Model
         return new \Entity\Orders($orderId, $city, $street, $phone, $userId, $totalAmount);
     }
 
+    public function getOrderId(int $userId): int
+    {
+        $stmt = $this->pdo->prepare("SELECT id FROM orders WHERE user_id = :userId");
+        $stmt->execute([':userId' => $userId]);
+        $result = $stmt->fetch();
+        return $result['id'];
+    }
+
     public function selectUserOrder(int $userId)
     {
         $stmt = $this->pdo->prepare("SELECT * FROM orders WHERE user_id = :userId");
