@@ -10,9 +10,15 @@ use Model\UserProduct;
 class CheckOutController
 {
     private UserProduct $userProductModel;
+    private Product $productModel;
+    private Orders $orderModel;
+    private OrderItems $orderItemModel;
     public function __construct()
     {
         $this->userProductModel = new UserProduct();
+        $this->productModel = new Product();
+        $this->orderModel = new Orders();
+        $this->orderItemModel = new OrderItems();
     }
 
     public function getCheckOut()
@@ -20,15 +26,15 @@ class CheckOutController
         session_start();
         if (isset($_SESSION['userId'])) {
             $userId = $_SESSION['userId'];
-            $userProducts = $this->userProductModel->takeUserProducts($userId);
+            $userProducts = $this->userProductModel->getUserProducts($userId);
             $productCounts = [];
             foreach ($userProducts as $userProduct) {
                 $productCounts[$userProduct->getProductId()] = $userProduct->getCount();
             }
 
-            $obj = new Product();
+            $obj = $this->productModel;
             $productIds = array_keys($productCounts);
-            $products = $obj->getUserProducts($productIds);
+            $products = $this->productModel->getUserProducts($productIds);
 
             // Создаем новый массив с добавленным количеством
             $updatedProducts = [];
@@ -47,6 +53,52 @@ class CheckOutController
         } else {
             http_response_code(403);
         }
+    }
+
+    public function registrateOrder()
+    {
+        $errors = $this->validateOrderForm($_POST);
+        if (empty($errors)) {
+            session_start();
+            $userId = $_SESSION['userId'];
+            $street = $_POST['house_address'];
+            $city = $_POST['city'];
+            $phone = $_POST['phone'];
+            $totalAmount = $_POST['total_amount'];
+
+            $order = $this->orderModel->create($city, $street, $phone, $userId, $totalAmount);
+
+            $userProducts = $this->userProductModel->getUserProducts($userId);
+
+            $productIds = [];
+            foreach ($userProducts as $userProduct) {
+                $productIds[] = $userProduct->getProductId();
+            }
+
+            $products = $this->productModel->getUserProducts($productIds);
+            foreach ($userProducts as $userProduct) {
+                foreach ($products as $product) {
+                    if ($userProduct->getProductId() === $product->getId()) {
+                        $product->setCountInCart($userProduct->getCount());
+                    }
+                }
+            }
+
+            foreach ($products as $product) {
+                $this->orderItemModel->insert(
+                    $order->getId(),
+                    $product->getId(),
+                    $product->getCount(),
+                    $product->getCount() * $product->getPrice()
+                );
+            }
+
+            $userProduct = $this->userProductModel->delete($userId);
+        }
+
+
+        require_once __DIR__ . '/../View/get_checkout.php';
+
     }
 
     public function validateOrderForm(array $data): array
@@ -79,65 +131,5 @@ class CheckOutController
             $errors['phone'] = 'Phone must be digits';
         }
         return $errors;
-    }
-
-    public function registrateOrder()
-    {
-        $errors = $this->validateOrderForm($_POST);
-        if (empty($errors)) {
-            session_start();
-            $userId = $_SESSION['userId'];
-            $street = $_POST['house_address'];
-            $city = $_POST['city'];
-            $phone = $_POST['phone'];
-            $totalAmount = $_POST['total_amount'];
-
-            $order = new Orders();
-            $order->insert($city, $street, $phone, $userId, $totalAmount);
-            $orderInfo = $order->selectUserOrder($userId);
-            $orderData = [
-                'ids' => [],
-//                'user_ids' => [],
-                'product_id'=>[],
-                'count' => [],
-                'price' => [],
-            ];
-
-            foreach ($orderInfo as $order) {
-                $orderData['ids'][] = $order->getId();
-//                $orderData['user_ids'][] = $order->getUserId();
-            }
-            $userProduct = new UserProduct();
-            $orderDataFromUserProducts = $userProduct->takeUserProducts($userId);
-
-            foreach ($orderDataFromUserProducts as $orderDataFromUserProduct) {
-                $orderData['product_id'][] = $orderDataFromUserProduct->getProductId();
-            }
-
-            foreach ($orderDataFromUserProducts as $orderDataFromUserProduct) {
-                $orderData['count'][] = $orderDataFromUserProduct->getCount();
-            }
-            $products = new Product();
-            $orderDataFromProduct = $products->getAllProducts();
-            foreach ($orderDataFromProduct as $orderDataPrice) {
-                $orderData['price'][] = $orderDataPrice->getPrice();
-            }
-
-            $orderItemsModel = new OrderItems();
-
-            foreach ($orderData['product_id'] as $index => $productId) {
-                $orderId = end($orderData['ids']); // Получаем последний добавленный order_id
-                $count = $orderData['count'][$index];
-                $price = $orderData['price'][$index];
-
-                $orderItemsModel->insert($orderId, $productId, $count, $price);
-            }
-
-            $userProduct = $this->userProductModel->delete($userId);
-        }
-
-
-        require_once __DIR__ . '/../View/get_checkout.php';
-
     }
 }

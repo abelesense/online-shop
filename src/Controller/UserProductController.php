@@ -18,7 +18,7 @@ class UserProductController
         if (isset($_SESSION['userId'])) {
             $userId = $_SESSION['userId'];
             // Получение списка продуктов из модели
-            $userProducts = $this->userProductModel->takeUserProducts($userId);
+            $userProducts = $this->userProductModel->getUserProducts($userId);
             $productCounts = [];
             foreach ($userProducts as $userProduct) {
                 $productCounts[$userProduct->getProductId()] = $userProduct->getCount();

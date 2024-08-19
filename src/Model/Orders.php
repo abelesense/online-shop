@@ -5,10 +5,17 @@ namespace Model;
 class Orders extends Model
 {
 
-    public function insert(string $city, string $street, string $phone, int $userId, int $totalAmount)
+    public function create(string $city, string $street, string $phone, int $userId, int $totalAmount): ?\Entity\Orders
     {
-        $stmt = $this->pdo->prepare("INSERT INTO orders (city, street, number, user_id, total_amount) VALUES (:city, :street, :phone, :userId, :totalAmount)");
+        $stmt = $this->pdo->prepare("INSERT INTO orders (city, street, number, user_id, total_amount) VALUES (:city, :street, :phone, :userId, :totalAmount) RETURNING id");
         $stmt->execute([':city' => $city, ':street' => $street, ':phone' => $phone, ':userId' => $userId, ':totalAmount' => $totalAmount]);
+
+        $data = $stmt->fetch();
+        if(empty($data)){
+            return null;
+        }
+        $orderId = $data['id'];
+        return new \Entity\Orders($orderId, $city, $street, $phone, $userId, $totalAmount);
     }
 
     public function selectUserOrder(int $userId)

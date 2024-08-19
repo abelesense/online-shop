@@ -26,7 +26,11 @@ class UserProduct extends Model
         return true;
     }
 
-    public function takeUserProducts(int $userId): array
+    /**
+     * @param int $userId
+     * @return \Entity\UserProduct[]
+     */
+    public function getUserProducts(int $userId): array
     {
         $stmt = $this->pdo->prepare("SELECT * FROM user_products WHERE user_id = :user_id");
         $stmt->execute([':user_id' => $userId]);
