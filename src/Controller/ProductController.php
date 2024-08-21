@@ -1,6 +1,7 @@
 <?php
 namespace Controller;
 
+<<<<<<< Updated upstream
 use Model\Product;
 use Model\UserProduct;
 
@@ -13,16 +14,30 @@ class ProductController
     {
         $this->productModel = new Product();
         $this->userProduct = new UserProduct();
+=======
+use Repository\ProductRepository;
+use Repository\UserProductRepository;
+use Service\AuthenticationService;
+
+class ProductController
+{
+    private ProductRepository $productModel;
+    private UserProductRepository $userProduct;
+    private AuthenticationService $authenticationService;
+
+    public function __construct()
+    {
+        $this->productModel = new ProductRepository();
+        $this->userProduct = new UserProductRepository();
+        $this->authenticationService = new AuthenticationService();
+>>>>>>> Stashed changes
     }
 
     //Метод для отображения каталога продуктов
     public function showCatalog()
     {
-
-        session_start();
-        $userId = $_SESSION['userId'];
         //Проверка авторизован ли пользователь
-        if(isset($_SESSION['userId'])) {
+        if($this->authenticationService->check()) {
             //Получение списка продуктов из модели
             $products = $this->productModel->getAllProducts();
 

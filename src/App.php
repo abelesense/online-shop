@@ -7,7 +7,7 @@ use Controller\CartController;
 class App
 {
     // Ассоциативный массив для маршрутов и методов HTTP
-    private $routes = [];
+    private array $routes = [];
 
     // Метод для обработки входящих запросов
     public function handle()
@@ -20,9 +20,17 @@ class App
         if ($route) {
             $class = $route['class'];
             $method = $route['method'];
+            $request = $route['request'];
 
             $controller = new $class();
+<<<<<<< Updated upstream
             $controller->$method();
+=======
+            $request = new $request();
+
+            // Вызываем метод контроллера с объектом запроса
+            $controller->$method($request);
+>>>>>>> Stashed changes
         } else {
             http_response_code(404);
             require_once 'View/404.php';
@@ -33,19 +41,21 @@ class App
         return $this->routes[$uri][$method] ?? null;
     }
     // Метод для добавления маршрута
-    public function addGetRoute(string $route, string $class, string $method)
+    public function addGetRoute(string $route, string $class, string $method, string $requestClass = \Request\Request::class)
     {
         $this->routes[$route]['GET'] = [
             'class' => $class,
-            'method' => $method
+            'method' => $method,
+            'request' => $requestClass
         ];
     }
 
-    public function addPostRoute(string $route, string $class, string $method)
+    public function addPostRoute(string $route, string $class, string $method, string $requestClas = \Request\Request::class)
     {
         $this->routes[$route]['POST'] = [
             'class' => $class,
-            'method' => $method
+            'method' => $method,
+            'request' => $requestClas
         ];
     }
 

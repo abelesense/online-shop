@@ -5,22 +5,16 @@ use Controller\ProductController;
 use Controller\CartController;
 use Controller\UserProductController;
 
-// Функция автозагрузки классов
-spl_autoload_register(function ($class) {
-    $file = __DIR__ . '/../' . str_replace('\\', '/', $class) . '.php';
-    if (file_exists($file)) {
-        require $file;
-    } else {
-        echo "File not found: $file<br>";
-    }
-});
+require_once './../Autoloader.php';
+
+Autoloader::registrate();
 
 $app = new \App();
 
 $app->addGetRoute('/registration', UserController::class, 'getRegistration');
-$app->addPostRoute('/registration', UserController::class, 'registrate');
+$app->addPostRoute('/registration', UserController::class, 'registrate', \Request\RegistrateRequest::class);
 $app->addGetRoute('/login', UserController::class, 'getLogin');
-$app->addPostRoute('/login', UserController::class, 'login');
+$app->addPostRoute('/login', UserController::class, 'login', \Request\LoginRequest::class);
 $app->addGetRoute('/my_profile', UserController::class, 'showProfile');
 $app->addGetRoute('/catalog', ProductController::class, 'showCatalog');
 $app->addGetRoute('/add-product', CartController::class, 'getAddProductForm');
