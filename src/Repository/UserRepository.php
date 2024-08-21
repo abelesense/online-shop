@@ -1,9 +1,9 @@
 <?php
-namespace Model;
-//require_once "../Model/Model.php";
+namespace Repository;
+//require_once "../Repository/Repository.php";
 use PDO;
 
-class User extends Model
+class UserRepository extends Repository
 {
 
     public function insert(string $name, string $email, string $passwordHash)

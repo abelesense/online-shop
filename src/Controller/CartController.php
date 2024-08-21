@@ -1,16 +1,16 @@
 <?php
 namespace Controller;
 
-use Model\UserProduct;
+use Repository\UserProductRepository;
 use Request\Request;
 
 class CartController{
 
-    private UserProduct $userProductModel;
-    // Конструктор инициализирует модели UserProduct и Product
+    private UserProductRepository $userProductModel;
+    // Конструктор инициализирует модели UserProductRepository и ProductRepository
     public function __construct()
     {
-        $this->userProductModel = new UserProduct();
+        $this->userProductModel = new UserProductRepository();
     }
     public function getAddProductForm()
     {

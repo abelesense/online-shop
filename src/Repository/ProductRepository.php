@@ -1,8 +1,8 @@
 <?php
-namespace Model;
+namespace Repository;
 use PDO;
 
-class Product extends Model
+class ProductRepository extends Repository
 {
 
     /**

@@ -2,24 +2,25 @@
 
 namespace Controller;
 
-use Model\OrderItems;
-use Model\Orders;
-use Model\Product;
-use Model\UserProduct;
+use Repository\OrderItemRepository;
+use Repository\OrderRepository;
+use Repository\ProductRepository;
+use Repository\UserProductRepository;
+use Request\OrderRequest;
 use Request\Request;
 
 class OrderController
 {
-    private Orders $orderModel;
-    private OrderItems $orderItemModel;
-    private Product $productModel;
-    private UserProduct $userProductModel;
+    private OrderRepository $orderModel;
+    private OrderItemRepository $orderItemModel;
+    private ProductRepository $productModel;
+    private UserProductRepository $userProductModel;
     public function __construct()
     {
-        $this->userProductModel = new UserProduct();
-        $this->productModel = new Product();
-        $this->orderModel = new Orders();
-        $this->orderItemModel = new OrderItems();
+        $this->userProductModel = new UserProductRepository();
+        $this->productModel = new ProductRepository();
+        $this->orderModel = new OrderRepository();
+        $this->orderItemModel = new OrderItemRepository();
     }
 
     public function getOrder()
@@ -29,8 +30,17 @@ class OrderController
         //Проверка авторизован ли пользователь
         if(isset($_SESSION['userId'])) {
             //Получение списка продуктов из модели
-            $orderId = $this->orderModel->getOrderId($userId);
-            $orderData = $this->orderItemModel->getUserOrderItems($orderId);
+            $orders = $this->orderModel->getAllByUserId($userId);
+            $orderIds = [];
+
+            foreach($orders as $order) {
+                $orderIds[] = $order->getId();
+            }
+            $orderData = [];
+
+            foreach($orderIds as $orderId) {
+                $orderData = $this->orderItemModel->getAllByOrderId($orderId);
+            }
 
             // Передача данных в представление
             require_once "../View/order.php";;
@@ -74,17 +84,17 @@ class OrderController
         }
     }
 
-    public function registrateOrder(Request $request)
+    public function registrateOrder(OrderRequest $request)
     {
-        $errors = $this->validateOrderForm($request);
+        $errors = $request->validateOrderForm();
         if (empty($errors)) {
             session_start();
             $data = $request->getData();
             $userId = $_SESSION['userId'];
-            $street = $data['house_address'];
-            $city = $data['city'];
-            $phone = $data['phone'];
-            $totalAmount = $data['total_amount'];
+            $street = $request->getStreet();
+            $city = $request->getCity();
+            $phone = $request->getPhone();
+            $totalAmount = $request->getTotalPrice();
 
             $order = $this->orderModel->create($city, $street, $phone, $userId, $totalAmount);
 
@@ -119,39 +129,6 @@ class OrderController
 
         require_once __DIR__ . '/../View/get_checkout.php';
 
-    }
-
-    public function validateOrderForm(Request $request): array
-    {
-        $errors = [];
-        $data = $request->getData();
-        $street = $data['house_address'];
-        if (empty($street)) {
-            $errors['street'] = "Street cannot be empty";
-        } elseif (strlen($street) < 2) {
-            $errors['street'] = "Name cannot be less than 2 characters";
-        }
-
-        // Валидация города
-        $city = $data['city'];
-        $firstChar = substr($city, 0, 1);
-        if (empty($city)) {
-            $errors['city'] = "City cannot be empty";
-        } elseif (strlen($city) < 2) {
-            $errors['city'] = "City cannot be less than 2 characters";
-        } elseif ($firstChar !== strtoupper($firstChar)) {
-            $errors['city'] = 'City must be starts with a capital letter';
-
-        }
-
-        // Валидация телефона
-        $phone = $data['phone'];
-        if (empty($phone)) {
-            $errors['phone'] = "Phone cannot be empty";
-        } elseif (!ctype_digit($phone)) {
-            $errors['phone'] = 'Phone must be digits';
-        }
-        return $errors;
     }
 
 }

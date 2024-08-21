@@ -1,7 +1,9 @@
 <?php
 namespace Controller;
 
-use Model\User;
+use Repository\UserRepository;
+use Request\LoginRequest;
+use Request\RegistrateRequest;
 use Request\Request;
 
 class UserController {
@@ -21,17 +23,17 @@ class UserController {
         require_once '../View/get_registration.php';
     }
 
-    public function registrate(Request $request)
+    public function registrate(RegistrateRequest $request)
     {
-        $errors = $this->validateRegistration($request);
+        $errors = $request->validate();
         if (empty($errors)) {
             $data = $request->getData();
-            $name = $data['name'];
-            $email = $data['email'];
-            $password = $data['psw'];
+            $name = $request->getName();
+            $email = $request->getEmail();
+            $password = $request->getPassword();
             $passwordHash = password_hash($password, PASSWORD_DEFAULT);
 
-            $user = new User();
+            $user = new UserRepository();
             $user->insert($name, $email, $passwordHash);
 
             header('Location: /login');
@@ -44,76 +46,17 @@ class UserController {
 
 
     }
-    public function validateRegistration (Request $request): array
+
+    public function login(LoginRequest $request)
     {
-        $errors = [];
+        $errors = $request->validate();
+        $userModel = new UserRepository();
         $data = $request->getData();
-        $name = $data['name'];
-        if (empty($name)) {
-            $errors['name'] = "Name cannot be empty";
-        } elseif (strlen($name) < 2) {
-            $errors['name'] = "Name cannot be less than 2 characters";
-        } elseif ($this->containsNumbers($name)) {
-            $errors['name'] = "Name cannot contain numbers";
-        }
-
-// Валидация почты
-        $email = $data['email'];
-        if (empty($email)) {
-            $errors['email'] = "Email cannot be empty";
-        } elseif (strlen($email) < 2) {
-            $errors['email'] = "Email cannot be less than 2 characters";
-        }
-        $flag = 0;
-        for($i = 0; $i < strlen($email); $i++) {
-            if ($email[$i] == '@') {
-                $flag = 1;
-            }
-        }
-        if ($flag == 0) {
-            $errors['email'] = "Email is not a valid email address";
-        }
-        $user = new User();
-        $count = $user->countWithEmail($email);
-        if ($count) {
-            $errors['email'] = "Email already exists";
-        }
-
-// Валидация пароля
-        $password = $data['psw'];
-        if (empty($password)) {
-            $errors['password'] = "Password cannot be empty";
-        } elseif (strlen($password) < 2) {
-            $errors['password'] = "Password cannot be less than 2 characters";
-        } elseif ($data['psw'] != $data['psw-repeat']) {
-            $errors['password'] = "Passwords do not match";
-        }
-        return $errors;
-
-    }
-
-    private function containsNumbers(string $string):bool  {
-        // Перебираем каждый символ в строке
-        for ($i = 0; $i < strlen($string); $i++) {
-            // Если текущий символ является числом, возвращаем true
-            if (is_numeric($string[$i]) && $string[$i] != ' ') {
-                return true;
-            }
-        }
-        // Если ни один символ не является числом, возвращаем false
-        return false;
-    }
-
-    public function login(Request $request)
-    {
-        $this->validateLogin($request);
-        $userModel = new User();
-        $data = $request->getData();
-        $user = $userModel->getUserByEmail($data["username"]);
+        $user = $userModel->getUserByEmail($request->getUsername());
 
         //Если нет ошибок, выполняем подключение к БД и проверку пользователя
         if (!empty($user)) {
-            $password = $data['password'];
+            $password = $request->getPassword();
             $passwordHash = $user->getPassword();
 
 
@@ -131,22 +74,6 @@ class UserController {
 
         }
         require_once __DIR__ . '/../View/get_login.php';
-    }
-    public function validateLogin(Request $request): array
-    {
-        $data = $request->getData();
-        $errors = [];
-        if (isset($data["username"])) {
-            $email = $data["username"];
-        } else {
-            $errors["username"] = "Username is required";
-        }
-        if (isset($data["password"])) {
-            $password = $data["password"];
-        } else {
-            $errors["password"] = "Password is required";
-        }
-        return $errors;
     }
 
     public function logout()

@@ -1,9 +1,9 @@
 <?php
-namespace Model;
-//require_once 'Model.php';
+namespace Repository;
+//require_once 'Repository.php';
 use PDO;
 
-class UserProduct extends Model
+class UserProductRepository extends Repository
 {
     public function addProductToCart(int $userId, int $productId, int $count): bool
     {

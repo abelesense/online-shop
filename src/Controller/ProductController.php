@@ -1,18 +1,18 @@
 <?php
 namespace Controller;
 
-use Model\Product;
-use Model\UserProduct;
+use Repository\ProductRepository;
+use Repository\UserProductRepository;
 
 class ProductController
 {
-    private Product $productModel;
-    private UserProduct $userProduct;
+    private ProductRepository $productModel;
+    private UserProductRepository $userProduct;
 
     public function __construct()
     {
-        $this->productModel = new Product();
-        $this->userProduct = new UserProduct();
+        $this->productModel = new ProductRepository();
+        $this->userProduct = new UserProductRepository();
     }
 
     //Метод для отображения каталога продуктов

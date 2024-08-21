@@ -10,7 +10,7 @@
     </thead>
     <tbody>
     <?php if (!empty($orderData)): ?>
-        <?php /** @var $data \Entity\OrderItems */ ?>
+        <?php /** @var $data \Entity\OrderItem */ ?>
         <?php foreach ($orderData as $data): ?>
             <tr>
                 <td data-label="Number of Order"><?= htmlspecialchars($data->getOrderId()) ?></td>

@@ -1,15 +1,15 @@
 <?php
 namespace Controller;
-use Model\UserProduct;
-use Model\Product;
+use Repository\UserProductRepository;
+use Repository\ProductRepository;
 
 class UserProductController
 {
-    private UserProduct $userProductModel;
+    private UserProductRepository $userProductModel;
 
     public function __construct()
     {
-        $this->userProductModel = new UserProduct();
+        $this->userProductModel = new UserProductRepository();
     }
     public function showCart()
     {
@@ -24,7 +24,7 @@ class UserProductController
                 $productCounts[$userProduct->getProductId()] = $userProduct->getCount();
             }
 
-            $obj = new Product();
+            $obj = new ProductRepository();
             $productIds = array_keys($productCounts);
             $products = $obj->getUserProducts($productIds);
 

@@ -1,8 +1,8 @@
 <?php
 
-namespace Model;
+namespace Repository;
 
-class OrderItems extends Model
+class OrderItemRepository extends Repository
 {
     public function insert(int $orderId, int $productId, int $count, float $price)
     {
@@ -15,14 +15,14 @@ class OrderItems extends Model
         ]);
     }
 
-    public function getUserOrderItems(int $orderId): array
+    public function getAllByOrderId(int $orderId): array
     {
         $stmt = $this->pdo->prepare("SELECT * FROM order_items WHERE order_id = :orderId");
         $stmt->execute([':orderId' => $orderId]);
         $result = $stmt->fetchAll();
         $OrderProductObjects = [];
         foreach ($result as $product) {
-            $OrderProductObjects[] = new \Entity\OrderItems(
+            $OrderProductObjects[] = new \Entity\OrderItem(
                 $product['id'],
                 $product['order_id'],
                 $product['product_id'],

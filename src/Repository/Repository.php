@@ -1,8 +1,8 @@
 <?php
-namespace Model;
+namespace Repository;
 use PDO;
 
-class Model
+class Repository
 {
     protected $pdo;
 

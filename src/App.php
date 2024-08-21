@@ -1,5 +1,6 @@
 <?php
 
+use Controller\OrderController;
 use Controller\UserController;
 use Controller\ProductController;
 use Controller\CartController;
@@ -21,8 +22,26 @@ class App
             $class = $route['class'];
             $method = $route['method'];
 
+            // Инициализация контроллера
             $controller = new $class();
-            $request = new \Request\Request($requestUri, $requestMethod, $_POST);
+
+            // Определяем тип запроса и создаем соответствующий объект запроса
+            switch ($requestUri) {
+                case '/registrate':
+                    $request = new \Request\RegistrateRequest($requestUri, $requestMethod, $_POST);
+                    break;
+                case '/login':
+                    $request = new \Request\LoginRequest($requestUri, $requestMethod, $_POST);
+                    break;
+                case '/checkout':
+                    $request = new \Request\OrderRequest($requestUri, $requestMethod, $_POST);
+                    break;
+                default:
+                    // По умолчанию используем общий Request класс
+                    $request = new \Request\Request($requestUri, $requestMethod, $_POST);
+            }
+
+            // Вызываем метод контроллера с объектом запроса
             $controller->$method($request);
         } else {
             http_response_code(404);
