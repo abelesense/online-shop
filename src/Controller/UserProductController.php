@@ -2,23 +2,26 @@
 namespace Controller;
 use Repository\UserProductRepository;
 use Repository\ProductRepository;
+use Service\AuthenticationService;
 
 class UserProductController
 {
     private UserProductRepository $userProductModel;
+    private AuthenticationService  $authenticationService;
 
     public function __construct()
     {
         $this->userProductModel = new UserProductRepository();
+        $this->authenticationService = new AuthenticationService();
     }
     public function showCart()
     {
         session_start();
         // Проверка авторизован ли пользователь
-        if (isset($_SESSION['userId'])) {
-            $userId = $_SESSION['userId'];
+        if ($this->authenticationService->check()) {
+            $user = $this->authenticationService->getUser();
             // Получение списка продуктов из модели
-            $userProducts = $this->userProductModel->getUserProducts($userId);
+            $userProducts = $this->userProductModel->getUserProducts($user->getId());
             $productCounts = [];
             foreach ($userProducts as $userProduct) {
                 $productCounts[$userProduct->getProductId()] = $userProduct->getCount();

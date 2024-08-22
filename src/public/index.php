@@ -20,9 +20,9 @@ spl_autoload_register(function ($class) {
 $app = new \App();
 
 $app->addGetRoute('/registration', UserController::class, 'getRegistration');
-$app->addPostRoute('/registration', UserController::class, 'registrate');
+$app->addPostRoute('/registration', UserController::class, 'registrate', \Request\RegistrateRequest::class);
 $app->addGetRoute('/login', UserController::class, 'getLogin');
-$app->addPostRoute('/login', UserController::class, 'login');
+$app->addPostRoute('/login', UserController::class, 'login', \Request\LoginRequest::class);
 $app->addGetRoute('/my_profile', UserController::class, 'showProfile');
 $app->addGetRoute('/catalog', ProductController::class, 'showCatalog');
 $app->addGetRoute('/add-product', CartController::class, 'getAddProductForm');
@@ -33,7 +33,7 @@ $app->addGetRoute('/cart', UserProductController::class, 'showCart');
 $app->addGetRoute('/logout', UserController::class, 'logout');
 $app->addPostRoute('/update-cart', CartController::class, 'updateCart');
 $app->addGetRoute('/checkout', OrderController::class, 'getCheckOut');
-$app->addPostRoute('/checkout', OrderController::class, 'registrateOrder');
+$app->addPostRoute('/checkout', OrderController::class, 'registrateOrder', \Request\OrderRequest::class);
 $app->addGetRoute('/my_orders', OrderController::class, 'getOrder');
 $app->handle();
 

@@ -29,5 +29,13 @@ class UserRepository extends Repository
         $count = $stmt->fetchColumn();
         return $count > 0;
     }
+
+    public function getUserById(int $userId): \Entity\User
+    {
+        $stmt = $this->pdo->prepare("SELECT * FROM users WHERE id = :userId");
+        $stmt->execute([':userId' => $userId]);
+        $user = $stmt->fetch(PDO::FETCH_ASSOC);
+        return new \Entity\User($user['id'], $user['name'], $user['password'], $user['email']);
+    }
 }
 

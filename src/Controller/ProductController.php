@@ -3,16 +3,20 @@ namespace Controller;
 
 use Repository\ProductRepository;
 use Repository\UserProductRepository;
+use Service\AuthenticationService;
 
 class ProductController
 {
     private ProductRepository $productModel;
     private UserProductRepository $userProduct;
 
+    private AuthenticationService  $authenticationService;
+
     public function __construct()
     {
         $this->productModel = new ProductRepository();
         $this->userProduct = new UserProductRepository();
+        $this->authenticationService = new AuthenticationService();
     }
 
     //Метод для отображения каталога продуктов
@@ -20,14 +24,14 @@ class ProductController
     {
 
         session_start();
-        $userId = $_SESSION['userId'];
+        $user = $this->authenticationService->getUser();
         //Проверка авторизован ли пользователь
-        if(isset($_SESSION['userId'])) {
+        if($this->authenticationService->check()) {
             //Получение списка продуктов из модели
             $products = $this->productModel->getAllProducts();
 
             foreach ($products as $product) {
-                $userProduct = $this->userProduct->getOneByUserIdAndProductId($userId, $product->getId());
+                $userProduct = $this->userProduct->getOneByUserIdAndProductId($user->getId(), $product->getId());
                 if ($userProduct !== null) {
                     $product->setCountInCart($userProduct->getCount());
                 } else {

@@ -8,6 +8,7 @@ use Repository\ProductRepository;
 use Repository\UserProductRepository;
 use Request\OrderRequest;
 use Request\Request;
+use Service\AuthenticationService;
 
 class OrderController
 {
@@ -15,22 +16,24 @@ class OrderController
     private OrderItemRepository $orderItemModel;
     private ProductRepository $productModel;
     private UserProductRepository $userProductModel;
+    private AuthenticationService  $authenticationService;
     public function __construct()
     {
         $this->userProductModel = new UserProductRepository();
         $this->productModel = new ProductRepository();
         $this->orderModel = new OrderRepository();
         $this->orderItemModel = new OrderItemRepository();
+        $this->authenticationService = new AuthenticationService();
     }
 
     public function getOrder()
     {
         session_start();
-        $userId = $_SESSION['userId'];
+        $user = $this->authenticationService->getUser();
         //Проверка авторизован ли пользователь
-        if(isset($_SESSION['userId'])) {
+        if($this->authenticationService->check()) {
             //Получение списка продуктов из модели
-            $orders = $this->orderModel->getAllByUserId($userId);
+            $orders = $this->orderModel->getAllByUserId($user->getId());
             $orderIds = [];
 
             foreach($orders as $order) {
@@ -53,9 +56,9 @@ class OrderController
     public function getCheckOut()
     {
         session_start();
-        if (isset($_SESSION['userId'])) {
-            $userId = $_SESSION['userId'];
-            $userProducts = $this->userProductModel->getUserProducts($userId);
+        if ($this->authenticationService->check()) {
+            $user = $this->authenticationService->getUser();
+            $userProducts = $this->userProductModel->getUserProducts($user->getId());
             $productCounts = [];
             foreach ($userProducts as $userProduct) {
                 $productCounts[$userProduct->getProductId()] = $userProduct->getCount();
@@ -90,15 +93,15 @@ class OrderController
         if (empty($errors)) {
             session_start();
             $data = $request->getData();
-            $userId = $_SESSION['userId'];
+            $user = $this->authenticationService->getUser();
             $street = $request->getStreet();
             $city = $request->getCity();
             $phone = $request->getPhone();
             $totalAmount = $request->getTotalPrice();
 
-            $order = $this->orderModel->create($city, $street, $phone, $userId, $totalAmount);
+            $order = $this->orderModel->create($city, $street, $phone, $user->getId(), $totalAmount);
 
-            $userProducts = $this->userProductModel->getUserProducts($userId);
+            $userProducts = $this->userProductModel->getUserProducts($user->getId());
 
             $productIds = [];
             foreach ($userProducts as $userProduct) {
@@ -123,7 +126,7 @@ class OrderController
                 );
             }
 
-            $userProduct = $this->userProductModel->delete($userId);
+            $userProduct = $this->userProductModel->delete($user->getId());
         }
 
 

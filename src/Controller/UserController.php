@@ -5,8 +5,15 @@ use Repository\UserRepository;
 use Request\LoginRequest;
 use Request\RegistrateRequest;
 use Request\Request;
+use Service\AuthenticationService;
 
 class UserController {
+
+    private AuthenticationService  $authenticationService;
+
+    public function __construct() {
+        $this->authenticationService = new AuthenticationService();
+    }
 
     public function getMyProfile()
     {
@@ -55,23 +62,10 @@ class UserController {
         $user = $userModel->getUserByEmail($request->getUsername());
 
         //Если нет ошибок, выполняем подключение к БД и проверку пользователя
-        if (!empty($user)) {
-            $password = $request->getPassword();
-            $passwordHash = $user->getPassword();
-
-
-            if (password_verify($password, $passwordHash)) {
-                session_start();
-                $_SESSION['userId']= $user->getId();
-                $_SESSION['userName'] = $user->getName();
+        if ($this->authenticationService->login($user->getEmail(), $user->getPassword())){
                 header('Location: /catalog');
-
-            } else {
-                $errors["username"] = "Username or password is incorrect";
-            }
         } else {
             $errors["username"] = "Username or password is incorrect";
-
         }
         require_once __DIR__ . '/../View/get_login.php';
     }

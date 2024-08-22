@@ -1,6 +1,5 @@
 <?php
 
-use Controller\OrderController;
 use Controller\UserController;
 use Controller\ProductController;
 use Controller\CartController;
@@ -8,7 +7,7 @@ use Controller\CartController;
 class App
 {
     // Ассоциативный массив для маршрутов и методов HTTP
-    private $routes = [];
+    private array $routes = [];
 
     // Метод для обработки входящих запросов
     public function handle()
@@ -21,51 +20,43 @@ class App
         if ($route) {
             $class = $route['class'];
             $method = $route['method'];
+            $requestClass = $route['request'];
 
-            // Инициализация контроллера
             $controller = new $class();
-
-            // Определяем тип запроса и создаем соответствующий объект запроса
-            switch ($requestUri) {
-                case '/registrate':
-                    $request = new \Request\RegistrateRequest($requestUri, $requestMethod, $_POST);
-                    break;
-                case '/login':
-                    $request = new \Request\LoginRequest($requestUri, $requestMethod, $_POST);
-                    break;
-                case '/checkout':
-                    $request = new \Request\OrderRequest($requestUri, $requestMethod, $_POST);
-                    break;
-                default:
-                    // По умолчанию используем общий Request класс
-                    $request = new \Request\Request($requestUri, $requestMethod, $_POST);
-            }
+            $request = new $requestClass();
 
             // Вызываем метод контроллера с объектом запроса
             $controller->$method($request);
+
         } else {
             http_response_code(404);
             require_once 'View/404.php';
         }
     }
+
+    // Метод для поиска маршрута
     private function getRoute(string $uri, string $method): ?array
     {
         return $this->routes[$uri][$method] ?? null;
     }
-    // Метод для добавления маршрута
-    public function addGetRoute(string $route, string $class, string $method)
+
+    // Метод для добавления GET-маршрута
+    public function addGetRoute(string $route, string $class, string $method, string $requestClass = \Request\Request::class)
     {
         $this->routes[$route]['GET'] = [
             'class' => $class,
-            'method' => $method
+            'method' => $method,
+            'request' => $requestClass
         ];
     }
 
-    public function addPostRoute(string $route, string $class, string $method)
+    // Метод для добавления POST-маршрута
+    public function addPostRoute(string $route, string $class, string $method, string $requestClass = \Request\Request::class)
     {
         $this->routes[$route]['POST'] = [
             'class' => $class,
-            'method' => $method
+            'method' => $method,
+            'request' => $requestClass
         ];
     }
 
