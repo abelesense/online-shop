@@ -2,21 +2,20 @@
 namespace Controller;
 use Repository\UserProductRepository;
 use Repository\ProductRepository;
-use Service\AuthenticationService;
+use Service\CookieAuthenticationService;
 
 class UserProductController
 {
     private UserProductRepository $userProductModel;
-    private AuthenticationService  $authenticationService;
+    private CookieAuthenticationService  $authenticationService;
 
     public function __construct()
     {
         $this->userProductModel = new UserProductRepository();
-        $this->authenticationService = new AuthenticationService();
+        $this->authenticationService = new CookieAuthenticationService();
     }
     public function showCart()
     {
-        session_start();
         // Проверка авторизован ли пользователь
         if ($this->authenticationService->check()) {
             $user = $this->authenticationService->getUser();

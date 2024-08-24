@@ -3,27 +3,25 @@ namespace Controller;
 
 use Repository\ProductRepository;
 use Repository\UserProductRepository;
-use Service\AuthenticationService;
+use Service\CookieAuthenticationService;
 
 class ProductController
 {
     private ProductRepository $productModel;
     private UserProductRepository $userProduct;
 
-    private AuthenticationService  $authenticationService;
+    private CookieAuthenticationService  $authenticationService;
 
     public function __construct()
     {
         $this->productModel = new ProductRepository();
         $this->userProduct = new UserProductRepository();
-        $this->authenticationService = new AuthenticationService();
+        $this->authenticationService = new CookieAuthenticationService();
     }
 
     //Метод для отображения каталога продуктов
     public function showCatalog()
     {
-
-        session_start();
         $user = $this->authenticationService->getUser();
         //Проверка авторизован ли пользователь
         if($this->authenticationService->check()) {

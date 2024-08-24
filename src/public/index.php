@@ -1,5 +1,5 @@
 <?php
-
+use Autoloader\Autoloader;
 use Controller\CheckOutController;
 use Controller\OrderController;
 use Controller\UserController;
@@ -7,15 +7,10 @@ use Controller\ProductController;
 use Controller\CartController;
 use Controller\UserProductController;
 
-// Функция автозагрузки классов
-spl_autoload_register(function ($class) {
-    $file = __DIR__ . '/../' . str_replace('\\', '/', $class) . '.php';
-    if (file_exists($file)) {
-        require $file;
-    } else {
-        echo "File not found: $file<br>";
-    }
-});
+
+require_once __DIR__ . '/../Autoloader/Autoloader.php';
+
+Autoloader::autoload();
 
 $app = new \App();
 

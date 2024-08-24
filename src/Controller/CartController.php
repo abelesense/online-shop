@@ -3,17 +3,17 @@ namespace Controller;
 
 use Repository\UserProductRepository;
 use Request\Request;
-use Service\AuthenticationService;
+use Service\CookieAuthenticationService;
 
 class CartController{
 
     private UserProductRepository $userProductModel;
-    private AuthenticationService  $authenticationService;
+    private CookieAuthenticationService  $authenticationService;
     // Конструктор инициализирует модели UserProductRepository и ProductRepository
     public function __construct()
     {
         $this->userProductModel = new UserProductRepository();
-        $this->authenticationService = new AuthenticationService();
+        $this->authenticationService = new CookieAuthenticationService();
     }
     public function getAddProductForm()
     {
@@ -22,8 +22,6 @@ class CartController{
 
     public function increaseProductQuantity(Request $request)
     {
-        session_start();
-
         $data = $request->getData();
 
         if ($this->authenticationService->check()) {
@@ -51,7 +49,6 @@ class CartController{
 
     public function decreaseProductQuantity(Request $request)
     {
-        session_start();
         $data = $request->getData();
 
         if ($this->authenticationService->check()) {
@@ -77,7 +74,6 @@ class CartController{
 
     public function updateCart(Request $request)
     {
-            session_start();
             $data = $request->getData();
             if ($this->authenticationService->check()) {
                 http_response_code(403);

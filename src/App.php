@@ -23,7 +23,7 @@ class App
             $requestClass = $route['request'];
 
             $controller = new $class();
-            $request = new $requestClass();
+            $request = new $requestClass($requestUri, $requestMethod, $_POST);
 
             // Вызываем метод контроллера с объектом запроса
             $controller->$method($request);

@@ -1,11 +1,17 @@
 <?php
 
 namespace Service;
-use \Entity\User;
+
+use Entity\User;
 use Repository\UserRepository;
 
-class AuthenticationService
+class SessionAuthenticationService implements AuthenticationInterface
 {
+    private UserRepository $userModel;
+    public function __construct()
+    {
+        $this->userModel = new UserRepository();
+    }
     public function getUser(): ?User
     {
         session_start();
@@ -13,8 +19,8 @@ class AuthenticationService
             return null;
         }
         $userId = $_SESSION['userId'];
-        $user = new UserRepository();
-        return $user->getUserById($userId);
+
+        return $this->userModel->getUserById($userId);
     }
 
     public function check(): bool
@@ -25,9 +31,7 @@ class AuthenticationService
 
     public function login(string $email, string $password): bool
     {
-
-        $userModel = new UserRepository();
-        $user = $userModel->getUserByEmail($email);
+        $user = $this->userModel->getUserByEmail($email);
 
         //Если нет ошибок, выполняем подключение к БД и проверку пользователя
         if (!empty($user)) {
@@ -36,11 +40,16 @@ class AuthenticationService
                 session_start();
                 $_SESSION['userId'] = $user->getId();
                 $_SESSION['userName'] = $user->getName();
-                exit();
+                return true;
 
             }
         }
         return false;
     }
 
+    public function logout(): void
+    {
+        session_unset();
+        session_destroy();
+    }
 }

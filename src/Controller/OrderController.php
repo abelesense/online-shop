@@ -8,7 +8,7 @@ use Repository\ProductRepository;
 use Repository\UserProductRepository;
 use Request\OrderRequest;
 use Request\Request;
-use Service\AuthenticationService;
+use Service\CookieAuthenticationService;
 
 class OrderController
 {
@@ -16,19 +16,18 @@ class OrderController
     private OrderItemRepository $orderItemModel;
     private ProductRepository $productModel;
     private UserProductRepository $userProductModel;
-    private AuthenticationService  $authenticationService;
+    private CookieAuthenticationService  $authenticationService;
     public function __construct()
     {
         $this->userProductModel = new UserProductRepository();
         $this->productModel = new ProductRepository();
         $this->orderModel = new OrderRepository();
         $this->orderItemModel = new OrderItemRepository();
-        $this->authenticationService = new AuthenticationService();
+        $this->authenticationService = new CookieAuthenticationService();
     }
 
     public function getOrder()
     {
-        session_start();
         $user = $this->authenticationService->getUser();
         //Проверка авторизован ли пользователь
         if($this->authenticationService->check()) {
@@ -55,7 +54,6 @@ class OrderController
 
     public function getCheckOut()
     {
-        session_start();
         if ($this->authenticationService->check()) {
             $user = $this->authenticationService->getUser();
             $userProducts = $this->userProductModel->getUserProducts($user->getId());
@@ -91,7 +89,6 @@ class OrderController
     {
         $errors = $request->validateOrderForm();
         if (empty($errors)) {
-            session_start();
             $data = $request->getData();
             $user = $this->authenticationService->getUser();
             $street = $request->getStreet();

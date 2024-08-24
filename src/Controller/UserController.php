@@ -5,14 +5,18 @@ use Repository\UserRepository;
 use Request\LoginRequest;
 use Request\RegistrateRequest;
 use Request\Request;
-use Service\AuthenticationService;
+use Service\AuthenticationInterface;
+use Service\CookieAuthenticationService;
+use Service\SessionAuthenticationService;
 
-class UserController {
+class UserController
+{
 
-    private AuthenticationService  $authenticationService;
+    private AuthenticationInterface  $authenticationService;
 
-    public function __construct() {
-        $this->authenticationService = new AuthenticationService();
+    public function __construct()
+    {
+        $this->authenticationService = new CookieAuthenticationService();
     }
 
     public function getMyProfile()
@@ -57,12 +61,8 @@ class UserController {
     public function login(LoginRequest $request)
     {
         $errors = $request->validate();
-        $userModel = new UserRepository();
-        $data = $request->getData();
-        $user = $userModel->getUserByEmail($request->getUsername());
-
         //Если нет ошибок, выполняем подключение к БД и проверку пользователя
-        if ($this->authenticationService->login($user->getEmail(), $user->getPassword())){
+        if ($this->authenticationService->login($request->getUsername(), $request->getPassword())){
                 header('Location: /catalog');
         } else {
             $errors["username"] = "Username or password is incorrect";
@@ -72,10 +72,8 @@ class UserController {
 
     public function logout()
     {
-        // Завершите сессию пользователя
-        session_unset();
-        session_destroy();
-
+        // Завершите сессию
+        $this->authenticationService->logout();
         // Перенаправьте пользователя на страницу входа или главную страницу
         header('Location: /login');
     }
