@@ -8,14 +8,19 @@ use Repository\UserRepository;
 
 class CookieAuthenticationService implements AuthenticationInterface
 {
+    private UserRepository $userRepository;
+    public function __construct()
+    {
+        $this->userRepository = new UserRepository();
+    }
     public function getUser(): ?User
     {
         if (!isset($_COOKIE['userId'])) {
             return null;
         }
         $userId = $_COOKIE['userId'];
-        $userRepo = new UserRepository();
-        return $userRepo->getUserById($userId);
+
+        return $this->userRepository->getUserById($userId);
     }
 
     public function check(): bool
@@ -25,8 +30,7 @@ class CookieAuthenticationService implements AuthenticationInterface
 
     public function login(string $email, string $password): bool
     {
-        $userRepo = new UserRepository();
-        $user = $userRepo->getUserByEmail($email);
+        $user = $this->userRepository->getUserByEmail($email);
 
         if (!empty($user)) {
             $passwordHash = $user->getPassword();

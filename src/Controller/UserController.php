@@ -14,9 +14,9 @@ class UserController
 
     private AuthenticationInterface  $authenticationService;
 
-    public function __construct()
+    public function __construct(AuthenticationInterface $authenticationService)
     {
-        $this->authenticationService = new CookieAuthenticationService();
+        $this->authenticationService = $authenticationService;
     }
 
     public function getMyProfile()

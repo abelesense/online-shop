@@ -1,8 +1,15 @@
 <?php
 
+use Controller\OrderController;
 use Controller\UserController;
 use Controller\ProductController;
 use Controller\CartController;
+use Controller\UserProductController;
+use Repository\OrderItemRepository;
+use Repository\OrderRepository;
+use Repository\ProductRepository;
+use Repository\UserProductRepository;
+use Service\AuthenticationInterface;
 
 class App
 {
@@ -22,7 +29,40 @@ class App
             $method = $route['method'];
             $requestClass = $route['request'];
 
-            $controller = new $class();
+            $orderRepository = new OrderRepository();
+            $orderItemRepository = new OrderItemRepository();
+            $productRepository = new ProductRepository();
+            $userProductRepository = new UserProductRepository();
+            $authenticationService = new \Service\SessionAuthenticationService();
+
+            if ($class === CartController::class) {
+                $controller = new CartController($userProductRepository, $authenticationService);
+            } else if ($class === OrderController::class) {
+                $controller = new \Controller\OrderController
+                (
+                    $userProductRepository,
+                    $productRepository,
+                    $orderRepository,
+                    $orderItemRepository,
+                    $authenticationService
+                );
+            } else if ($class === ProductController::class) {
+                $controller = new ProductController(
+                    $productRepository,
+                    $userProductRepository,
+                    $authenticationService
+                );
+            } else if ($class === UserController::class) {
+                $controller = new UserController(
+                    $authenticationService
+                );
+            } else if ($class === \Controller\UserProductController::class) {
+                $controller = new UserProductController(
+                    $userProductRepository,
+                    $authenticationService
+                );
+            }
+
             $request = new $requestClass($requestUri, $requestMethod, $_POST);
 
             // Вызываем метод контроллера с объектом запроса

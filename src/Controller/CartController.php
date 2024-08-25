@@ -3,17 +3,19 @@ namespace Controller;
 
 use Repository\UserProductRepository;
 use Request\Request;
+use Service\AuthenticationInterface;
 use Service\CookieAuthenticationService;
 
-class CartController{
+class CartController
+{
 
     private UserProductRepository $userProductModel;
-    private CookieAuthenticationService  $authenticationService;
+    private AuthenticationInterface  $authenticationService;
     // Конструктор инициализирует модели UserProductRepository и ProductRepository
-    public function __construct()
+    public function __construct(UserProductRepository $userProductRepository, AuthenticationInterface $authenticationService)
     {
-        $this->userProductModel = new UserProductRepository();
-        $this->authenticationService = new CookieAuthenticationService();
+        $this->userProductModel = $userProductRepository;
+        $this->authenticationService = $authenticationService;
     }
     public function getAddProductForm()
     {

@@ -7,10 +7,10 @@ use Repository\UserRepository;
 
 class SessionAuthenticationService implements AuthenticationInterface
 {
-    private UserRepository $userModel;
+    private UserRepository $userRepository;
     public function __construct()
     {
-        $this->userModel = new UserRepository();
+        $this->userRepository = new UserRepository();
     }
     public function getUser(): ?User
     {
@@ -20,7 +20,7 @@ class SessionAuthenticationService implements AuthenticationInterface
         }
         $userId = $_SESSION['userId'];
 
-        return $this->userModel->getUserById($userId);
+        return $this->userRepository->getUserById($userId);
     }
 
     public function check(): bool
@@ -31,7 +31,7 @@ class SessionAuthenticationService implements AuthenticationInterface
 
     public function login(string $email, string $password): bool
     {
-        $user = $this->userModel->getUserByEmail($email);
+        $user = $this->userRepository->getUserByEmail($email);
 
         //Если нет ошибок, выполняем подключение к БД и проверку пользователя
         if (!empty($user)) {

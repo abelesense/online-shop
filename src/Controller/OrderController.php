@@ -8,22 +8,29 @@ use Repository\ProductRepository;
 use Repository\UserProductRepository;
 use Request\OrderRequest;
 use Request\Request;
+use Service\AuthenticationInterface;
 use Service\CookieAuthenticationService;
 
 class OrderController
 {
-    private OrderRepository $orderModel;
-    private OrderItemRepository $orderItemModel;
-    private ProductRepository $productModel;
-    private UserProductRepository $userProductModel;
-    private CookieAuthenticationService  $authenticationService;
-    public function __construct()
+    private OrderRepository $orderRepository;
+    private OrderItemRepository $orderItemRepository;
+    private ProductRepository $productRepository;
+    private UserProductRepository $userProductRepository;
+    private AuthenticationInterface  $authenticationService;
+    public function __construct(
+        UserProductRepository $userProductRepository,
+        ProductRepository $productRepository,
+        OrderRepository $orderRepository,
+        OrderItemRepository $orderItemRepository,
+        AuthenticationInterface $authenticationService
+    )
     {
-        $this->userProductModel = new UserProductRepository();
-        $this->productModel = new ProductRepository();
-        $this->orderModel = new OrderRepository();
-        $this->orderItemModel = new OrderItemRepository();
-        $this->authenticationService = new CookieAuthenticationService();
+        $this->userProductRepository = $userProductRepository;
+        $this->productRepository = $productRepository;
+        $this->orderRepository = $orderRepository;
+        $this->orderItemRepository = $orderItemRepository;
+        $this->authenticationService = $authenticationService;
     }
 
     public function getOrder()
@@ -32,7 +39,7 @@ class OrderController
         //Проверка авторизован ли пользователь
         if($this->authenticationService->check()) {
             //Получение списка продуктов из модели
-            $orders = $this->orderModel->getAllByUserId($user->getId());
+            $orders = $this->orderRepository->getAllByUserId($user->getId());
             $orderIds = [];
 
             foreach($orders as $order) {
@@ -41,7 +48,7 @@ class OrderController
             $orderData = [];
 
             foreach($orderIds as $orderId) {
-                $orderData = $this->orderItemModel->getAllByOrderId($orderId);
+                $orderData = $this->orderItemRepository->getAllByOrderId($orderId);
             }
 
             // Передача данных в представление
@@ -56,15 +63,15 @@ class OrderController
     {
         if ($this->authenticationService->check()) {
             $user = $this->authenticationService->getUser();
-            $userProducts = $this->userProductModel->getUserProducts($user->getId());
+            $userProducts = $this->uuserProductRepository->getUserProducts($user->getId());
             $productCounts = [];
             foreach ($userProducts as $userProduct) {
                 $productCounts[$userProduct->getProductId()] = $userProduct->getCount();
             }
 
-            $obj = $this->productModel;
+            $obj = $this->productRepository;
             $productIds = array_keys($productCounts);
-            $products = $this->productModel->getUserProducts($productIds);
+            $products = $this->productRepository->getUserProducts($productIds);
 
             // Создаем новый массив с добавленным количеством
             $updatedProducts = [];
@@ -96,16 +103,16 @@ class OrderController
             $phone = $request->getPhone();
             $totalAmount = $request->getTotalPrice();
 
-            $order = $this->orderModel->create($city, $street, $phone, $user->getId(), $totalAmount);
+            $order = $this->orderRepository->create($city, $street, $phone, $user->getId(), $totalAmount);
 
-            $userProducts = $this->userProductModel->getUserProducts($user->getId());
+            $userProducts = $this->uuserProductRepository->getUserProducts($user->getId());
 
             $productIds = [];
             foreach ($userProducts as $userProduct) {
                 $productIds[] = $userProduct->getProductId();
             }
 
-            $products = $this->productModel->getUserProducts($productIds);
+            $products = $this->productRepository->getUserProducts($productIds);
             foreach ($userProducts as $userProduct) {
                 foreach ($products as $product) {
                     if ($userProduct->getProductId() === $product->getId()) {
@@ -115,7 +122,7 @@ class OrderController
             }
 
             foreach ($products as $product) {
-                $this->orderItemModel->insert(
+                $this->orderItemRepository->insert(
                     $order->getId(),
                     $product->getId(),
                     $product->getCount(),
@@ -123,7 +130,7 @@ class OrderController
                 );
             }
 
-            $userProduct = $this->userProductModel->delete($user->getId());
+            $userProduct = $this->uuserProductRepository->delete($user->getId());
         }
 
 

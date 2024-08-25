@@ -2,17 +2,18 @@
 namespace Controller;
 use Repository\UserProductRepository;
 use Repository\ProductRepository;
+use Service\AuthenticationInterface;
 use Service\CookieAuthenticationService;
 
 class UserProductController
 {
-    private UserProductRepository $userProductModel;
-    private CookieAuthenticationService  $authenticationService;
+    private UserProductRepository $userProductRepository;
+    private AuthenticationInterface $authenticationService;
 
-    public function __construct()
+    public function __construct(UserProductRepository $userProductModel, AuthenticationInterface $authenticationService)
     {
-        $this->userProductModel = new UserProductRepository();
-        $this->authenticationService = new CookieAuthenticationService();
+        $this->userProductRepository = $userProductModel;
+        $this->authenticationService = $authenticationService;
     }
     public function showCart()
     {
@@ -20,7 +21,7 @@ class UserProductController
         if ($this->authenticationService->check()) {
             $user = $this->authenticationService->getUser();
             // Получение списка продуктов из модели
-            $userProducts = $this->userProductModel->getUserProducts($user->getId());
+            $userProducts = $this->userProductRepository->getUserProducts($user->getId());
             $productCounts = [];
             foreach ($userProducts as $userProduct) {
                 $productCounts[$userProduct->getProductId()] = $userProduct->getCount();
