@@ -6,13 +6,81 @@ use Controller\UserController;
 use Controller\ProductController;
 use Controller\CartController;
 use Controller\UserProductController;
+use Repository\OrderItemRepository;
+use Repository\OrderRepository;
+use Repository\ProductRepository;
+use Repository\UserProductRepository;
+use Repository\UserRepository;
 
 
 require_once __DIR__ . '/../Autoloader/Autoloader.php';
 
 Autoloader::autoload();
 
-$app = new \App();
+$container = new Container();
+
+$container->set(CartController::class, function () {
+$userProductRepository = new UserProductRepository();
+    $authenticationService = new \Service\SessionAuthenticationService();
+    $controller = new CartController($userProductRepository, $authenticationService);
+});
+$container->set(OrderController::class, function () {
+    $orderRepository = new OrderRepository();
+    $orderItemRepository = new OrderItemRepository();
+    $productRepository = new ProductRepository();
+    $userProductRepository = new UserProductRepository();
+    $authenticationService = new \Service\SessionAuthenticationService();
+
+    $controller = new \Controller\OrderController
+    (
+        $userProductRepository,
+        $productRepository,
+        $orderRepository,
+        $orderItemRepository,
+        $authenticationService
+    );
+});
+$container->set(ProductController::class, function () {
+    $productRepository = new ProductRepository();
+    $userProductRepository = new UserProductRepository();
+    $authenticationService = new \Service\SessionAuthenticationService();
+    $controller = new ProductController(
+        $productRepository,
+        $userProductRepository,
+        $authenticationService
+    );
+});
+$container->set(UserController::class, function () {
+    $productRepository = new ProductRepository();
+    $userProductRepository = new UserProductRepository();
+    $authenticationService = new \Service\SessionAuthenticationService();
+    $controller = new ProductController(
+        $productRepository,
+        $userProductRepository,
+        $authenticationService
+    );
+});
+$container->set(UserProductController::class, function () {
+    $userProductRepository = new UserProductRepository();
+    $authenticationService = new \Service\SessionAuthenticationService();
+    $controller = new UserProductController(
+        $userProductRepository,
+        $authenticationService
+    );
+});
+$container->set(\Service\CookieAuthenticationService::class, function () {
+    $userRepository = new UserRepository();
+    $controller = new \Service\CookieAuthenticationService(
+        $userRepository
+    );
+});
+$container->set(\Service\SessionAuthenticationService::class, function () {
+    $userRepository = new UserRepository();
+    $controller = new \Service\SessionAuthenticationService(
+        $userRepository
+    );
+});
+$app = new \App($container);
 
 $app->addGetRoute('/registration', UserController::class, 'getRegistration');
 $app->addPostRoute('/registration', UserController::class, 'registrate', \Request\RegistrateRequest::class);

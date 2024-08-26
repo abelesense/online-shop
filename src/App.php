@@ -15,8 +15,13 @@ class App
 {
     // Ассоциативный массив для маршрутов и методов HTTP
     private array $routes = [];
+    private Container $container;
+    public function __construct(Container $container){
+        $this->container = new Container();
+    }
 
     // Метод для обработки входящих запросов
+
     public function handle()
     {
         $requestUri = $_SERVER['REQUEST_URI'];
@@ -29,39 +34,7 @@ class App
             $method = $route['method'];
             $requestClass = $route['request'];
 
-            $orderRepository = new OrderRepository();
-            $orderItemRepository = new OrderItemRepository();
-            $productRepository = new ProductRepository();
-            $userProductRepository = new UserProductRepository();
-            $authenticationService = new \Service\SessionAuthenticationService();
-
-            if ($class === CartController::class) {
-                $controller = new CartController($userProductRepository, $authenticationService);
-            } else if ($class === OrderController::class) {
-                $controller = new \Controller\OrderController
-                (
-                    $userProductRepository,
-                    $productRepository,
-                    $orderRepository,
-                    $orderItemRepository,
-                    $authenticationService
-                );
-            } else if ($class === ProductController::class) {
-                $controller = new ProductController(
-                    $productRepository,
-                    $userProductRepository,
-                    $authenticationService
-                );
-            } else if ($class === UserController::class) {
-                $controller = new UserController(
-                    $authenticationService
-                );
-            } else if ($class === \Controller\UserProductController::class) {
-                $controller = new UserProductController(
-                    $userProductRepository,
-                    $authenticationService
-                );
-            }
+            $controller = $this->container->get($class);
 
             $request = new $requestClass($requestUri, $requestMethod, $_POST);
 
