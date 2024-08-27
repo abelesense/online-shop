@@ -18,7 +18,7 @@ class Container
     {
         if (isset($this->services[$class])) {
             $callback = $this->services[$class];
-            $obj = $callback();
+            $obj = $callback($this);
         } else {
             $obj = new $class();
         }

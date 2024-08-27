@@ -20,16 +20,19 @@ Autoloader::autoload();
 $container = new Container();
 
 $container->set(CartController::class, function () {
-$userProductRepository = new UserProductRepository();
-    $authenticationService = new \Service\SessionAuthenticationService();
+    $userProductRepository = new UserProductRepository();
+    $userRepository = new UserRepository();
+    $authenticationService = new \Service\CookieAuthenticationService($userRepository);
     $controller = new CartController($userProductRepository, $authenticationService);
+    return $controller;
 });
 $container->set(OrderController::class, function () {
     $orderRepository = new OrderRepository();
     $orderItemRepository = new OrderItemRepository();
     $productRepository = new ProductRepository();
     $userProductRepository = new UserProductRepository();
-    $authenticationService = new \Service\SessionAuthenticationService();
+    $userRepository = new UserRepository();
+    $authenticationService = new \Service\CookieAuthenticationService($userRepository);
 
     $controller = new \Controller\OrderController
     (
@@ -39,46 +42,50 @@ $container->set(OrderController::class, function () {
         $orderItemRepository,
         $authenticationService
     );
+    return $controller;
 });
 $container->set(ProductController::class, function () {
     $productRepository = new ProductRepository();
     $userProductRepository = new UserProductRepository();
-    $authenticationService = new \Service\SessionAuthenticationService();
+    $userRepository = new UserRepository();
+    $authenticationService = new \Service\CookieAuthenticationService($userRepository);
     $controller = new ProductController(
         $productRepository,
         $userProductRepository,
         $authenticationService
     );
+    return $controller;
 });
 $container->set(UserController::class, function () {
-    $productRepository = new ProductRepository();
-    $userProductRepository = new UserProductRepository();
-    $authenticationService = new \Service\SessionAuthenticationService();
-    $controller = new ProductController(
-        $productRepository,
-        $userProductRepository,
+    $userRepository = new UserRepository();
+    $authenticationService = new \Service\CookieAuthenticationService($userRepository);
+    $controller = new UserController(
         $authenticationService
     );
+    return $controller;
 });
-$container->set(UserProductController::class, function () {
+$container->set(UserProductController::class, function (Container $container) {
     $userProductRepository = new UserProductRepository();
-    $authenticationService = new \Service\SessionAuthenticationService();
+    $authenticationService = $container->get(\Service\CookieAuthenticationService::class);
     $controller = new UserProductController(
         $userProductRepository,
         $authenticationService
     );
+    return $controller;
 });
 $container->set(\Service\CookieAuthenticationService::class, function () {
     $userRepository = new UserRepository();
     $controller = new \Service\CookieAuthenticationService(
         $userRepository
     );
+    return $controller;
 });
 $container->set(\Service\SessionAuthenticationService::class, function () {
     $userRepository = new UserRepository();
-    $controller = new \Service\SessionAuthenticationService(
+    $controller = new \Service\CookieAuthenticationService(
         $userRepository
     );
+    return $controller;
 });
 $app = new \App($container);
 
