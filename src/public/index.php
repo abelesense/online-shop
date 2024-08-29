@@ -1,5 +1,7 @@
 <?php
-use Autoloader\Autoloader;
+require_once __DIR__ . '/../Autoloader/Autoloader.php';
+Autoloader::autoload();
+
 use Controller\CheckOutController;
 use Controller\OrderController;
 use Controller\UserController;
@@ -11,11 +13,6 @@ use Repository\OrderRepository;
 use Repository\ProductRepository;
 use Repository\UserProductRepository;
 use Repository\UserRepository;
-
-
-require_once __DIR__ . '/../Autoloader/Autoloader.php';
-
-Autoloader::autoload();
 
 $container = new Container();
 

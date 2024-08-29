@@ -13,6 +13,8 @@ services:
     volumes:
       - './docker/conf/php/xdebug.ini:/usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini'
       - '.:/var/www/html'
+    env_file:
+      - .env
 
   db:
     image: postgres:14.1
@@ -20,7 +22,7 @@ services:
       - POSTGRES_DB=${DB_NAME}
       - POSTGRES_USER=${DB_USER}
       - POSTGRES_PASSWORD=${DB_PASSWORD}
-    volumes:
-      - ./docker/postgres/data:/var/lib/postgresql/data
+#    volumes:
+#      - ./docker/postgres/data:/var/lib/postgresql/data
     ports:
       - "54321:5432"

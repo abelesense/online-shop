@@ -17,7 +17,7 @@ class App
     private array $routes = [];
     private Container $container;
     public function __construct(Container $container){
-        $this->container = new Container();
+        $this->container = $container;
     }
 
     // Метод для обработки входящих запросов
