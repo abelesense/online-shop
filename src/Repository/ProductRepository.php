@@ -64,4 +64,30 @@ class ProductRepository extends Repository
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
         return $result['price'];
     }
+
+    public function leftJoinUserProducts($userId): array
+    {
+        $stmt = $this->pdo->prepare("SELECT p.id AS product_id, 
+                           p.name AS product_name, 
+                           p.description AS product_description, 
+                           p.price AS product_price, 
+                           p.image_url AS product_image_url,
+                           COALESCE(up.count, 0) AS count_in_cart
+                    FROM products p
+                    LEFT JOIN user_products up ON p.id = up.product_id AND up.user_id = :userId");
+        $stmt->execute(['userId' => $userId]);
+        $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $OrderProductObjects = [];
+        foreach ($result as $product) {
+            $OrderProductObjects[] = new \Entity\Product(
+                $product['product_id'],
+                $product['product_name'],
+                $product['product_description'],
+                $product['price'],
+                $product['product_image_url'],
+                $product['count_in_cart']
+            );
+        }
+        return $OrderProductObjects;
+    }
 }

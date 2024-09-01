@@ -1,56 +1,41 @@
 <?php
 namespace Controller;
-use Repository\UserProductRepository;
+
 use Repository\ProductRepository;
+use Repository\UserProductRepository;
 use Service\AuthenticationInterface;
-use Service\CookieAuthenticationService;
+use PDO;
 
 class UserProductController
 {
     private UserProductRepository $userProductRepository;
     private AuthenticationInterface $authenticationService;
+    private PDO $pdo;
+    private ProductRepository $productRepository;
 
-    public function __construct(UserProductRepository $userProductModel, AuthenticationInterface $authenticationService)
+    public function __construct(UserProductRepository $userProductModel, AuthenticationInterface $authenticationService, PDO $pdo, ProductRepository $productRepository)
     {
         $this->userProductRepository = $userProductModel;
         $this->authenticationService = $authenticationService;
+        $this->pdo = $pdo;
+        $this->productRepository = $productRepository;
     }
+
     public function showCart()
     {
         // Проверка авторизован ли пользователь
         if ($this->authenticationService->check()) {
             $user = $this->authenticationService->getUser();
-            // Получение списка продуктов из модели
-            $userProducts = $this->userProductRepository->getUserProducts($user->getId());
-            $productCounts = [];
-            foreach ($userProducts as $userProduct) {
-                $productCounts[$userProduct->getProductId()] = $userProduct->getCount();
-            }
+            $userId = $user->getId();
 
-            $obj = new ProductRepository();
-            $productIds = array_keys($productCounts);
-            $products = $obj->getUserProducts($productIds);
+            // Получение данных о продуктах с количеством в корзине
+            $products = $this->productRepository->leftJoinUserProducts($userId);
 
-            // Создаем новый массив с добавленным количеством
-            $updatedProducts = [];
-            foreach ($products as $product) {
-                if (isset($productCounts[$product->getId()])) {
-                    $product->setCountInCart($productCounts[$product->getId()]);
-                } else {
-                    $product->setCountInCart(0); // или какое-то другое значение по умолчанию
-                }
-                $updatedProducts[] = $product;
-            }
-
-            // Передача массива $updatedProducts в шаблон
-            $products = $updatedProducts; // Для совместимости с текущим шаблоном
+            // Передача данных в шаблон
             require_once '../View/cart.php';
         } else {
             http_response_code(403);
+            echo "Доступ запрещен.";
         }
     }
-
-    
-
-
 }

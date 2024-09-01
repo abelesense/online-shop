@@ -12,13 +12,14 @@ class Product
 
     private int $countInCart;
 
-    public function __construct(int $id, string $name, string $description, string $price, string $image)
+    public function __construct(int $id, string $name, string $description, string $price, string $image, int $count)
     {
         $this->id = $id;
         $this->name = $name;
         $this->description = $description;
         $this->price = $price;
         $this->image = $image;
+        $this->count = $count;
 
     }
 
@@ -62,12 +63,8 @@ class Product
         return $this->image;
     }
 
-    public function setCountInCart(int $count)
-    {
-        $this->countInCart = $count;
-    }
     public function getCount(): int
     {
-        return $this->countInCart;
+        return $this->count;
     }
 }
