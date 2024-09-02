@@ -23,18 +23,8 @@ class ProductController
         $user = $this->authenticationService->getUser();
         //Проверка авторизован ли пользователь
         if($this->authenticationService->check()) {
-            //Получение списка продуктов из модели
-            $products = $this->productRepository->getAllProducts();
+            $products = $this->productRepository->getAllWithCount($user->getId());
 
-            foreach ($products as $product) {
-                $userProduct = $this->userProduct->getOneByUserIdAndProductId($user->getId(), $product->getId());
-                if ($userProduct !== null) {
-                    $product->setCountInCart($userProduct->getCount());
-                } else {
-                    $product->setCountInCart(0); // Значение по умолчанию
-                }
-            }
-            unset($product);
             // Передача данных в представление
             require_once __DIR__ . '/../View/catalog.php';
         } else {

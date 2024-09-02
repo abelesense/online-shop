@@ -10,14 +10,12 @@ class UserProductController
 {
     private UserProductRepository $userProductRepository;
     private AuthenticationInterface $authenticationService;
-    private PDO $pdo;
     private ProductRepository $productRepository;
 
-    public function __construct(UserProductRepository $userProductModel, AuthenticationInterface $authenticationService, PDO $pdo, ProductRepository $productRepository)
+    public function __construct(UserProductRepository $userProductModel, AuthenticationInterface $authenticationService, ProductRepository $productRepository)
     {
         $this->userProductRepository = $userProductModel;
         $this->authenticationService = $authenticationService;
-        $this->pdo = $pdo;
         $this->productRepository = $productRepository;
     }
 
@@ -29,7 +27,7 @@ class UserProductController
             $userId = $user->getId();
 
             // Получение данных о продуктах с количеством в корзине
-            $products = $this->productRepository->leftJoinUserProducts($userId);
+            $products = $this->productRepository->getAllWithCount($userId);
 
             // Передача данных в шаблон
             require_once '../View/cart.php';

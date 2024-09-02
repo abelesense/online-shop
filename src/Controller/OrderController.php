@@ -63,29 +63,8 @@ class OrderController
     {
         if ($this->authenticationService->check()) {
             $user = $this->authenticationService->getUser();
-            $userProducts = $this->uuserProductRepository->getUserProducts($user->getId());
-            $productCounts = [];
-            foreach ($userProducts as $userProduct) {
-                $productCounts[$userProduct->getProductId()] = $userProduct->getCount();
-            }
 
-            $obj = $this->productRepository;
-            $productIds = array_keys($productCounts);
-            $products = $this->productRepository->getUserProducts($productIds);
-
-            // Создаем новый массив с добавленным количеством
-            $updatedProducts = [];
-            foreach ($products as $product) {
-                if (isset($productCounts[$product->getId()])) {
-                    $product->setCountInCart($productCounts[$product->getId()]);
-                } else {
-                    $product->setCountInCart(0); // или какое-то другое значение по умолчанию
-                }
-                $updatedProducts[] = $product;
-            }
-
-            // Передача массива $updatedProducts в шаблон
-            $products = $updatedProducts;
+            $products = $this->productRepository->getAllWithCount($user->getId());
             require_once "../View/get_checkout.php";
         } else {
             http_response_code(403);
@@ -105,7 +84,7 @@ class OrderController
 
             $order = $this->orderRepository->create($city, $street, $phone, $user->getId(), $totalAmount);
 
-            $userProducts = $this->uuserProductRepository->getUserProducts($user->getId());
+            $userProducts = $this->userProductRepository->getUserProducts($user->getId());
 
             $productIds = [];
             foreach ($userProducts as $userProduct) {
@@ -130,12 +109,13 @@ class OrderController
                 );
             }
 
-            $userProduct = $this->uuserProductRepository->delete($user->getId());
+            $userProduct = $this->userProductRepository->delete($user->getId());
         }
 
 
         require_once __DIR__ . '/../View/get_checkout.php';
 
     }
+
 
 }
