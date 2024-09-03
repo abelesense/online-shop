@@ -94,6 +94,3 @@ $app->addGetRoute('/checkout', OrderController::class, 'getCheckOut');
 $app->addPostRoute('/checkout', OrderController::class, 'registrateOrder', \Request\OrderRequest::class);
 $app->addGetRoute('/my_orders', OrderController::class, 'getOrder');
 $app->handle();
-
-
-

@@ -18,6 +18,8 @@ class OrderController
     private ProductRepository $productRepository;
     private UserProductRepository $userProductRepository;
     private AuthenticationInterface  $authenticationService;
+    private $pdo;
+
     public function __construct(
         UserProductRepository $userProductRepository,
         ProductRepository $productRepository,
@@ -75,41 +77,49 @@ class OrderController
     {
         $errors = $request->validateOrderForm();
         if (empty($errors)) {
-            $data = $request->getData();
-            $user = $this->authenticationService->getUser();
-            $street = $request->getStreet();
-            $city = $request->getCity();
-            $phone = $request->getPhone();
-            $totalAmount = $request->getTotalPrice();
+           try{
+               $this->pdo->beginTransaction();
+               $data = $request->getData();
+               $user = $this->authenticationService->getUser();
+               $street = $request->getStreet();
+               $city = $request->getCity();
+               $phone = $request->getPhone();
+               $totalAmount = $request->getTotalPrice();
 
-            $order = $this->orderRepository->create($city, $street, $phone, $user->getId(), $totalAmount);
+               $order = $this->orderRepository->create($city, $street, $phone, $user->getId(), $totalAmount);
 
-            $userProducts = $this->userProductRepository->getUserProducts($user->getId());
+               $userProducts = $this->userProductRepository->getUserProducts($user->getId());
 
-            $productIds = [];
-            foreach ($userProducts as $userProduct) {
-                $productIds[] = $userProduct->getProductId();
-            }
+               $productIds = [];
+               foreach ($userProducts as $userProduct) {
+                   $productIds[] = $userProduct->getProductId();
+               }
 
-            $products = $this->productRepository->getUserProducts($productIds);
-            foreach ($userProducts as $userProduct) {
-                foreach ($products as $product) {
-                    if ($userProduct->getProductId() === $product->getId()) {
-                        $product->setCountInCart($userProduct->getCount());
-                    }
-                }
-            }
+               $products = $this->productRepository->getUserProducts($productIds);
+               foreach ($userProducts as $userProduct) {
+                   foreach ($products as $product) {
+                       if ($userProduct->getProductId() === $product->getId()) {
+                           $product->setCountInCart($userProduct->getCount());
+                       }
+                   }
+               }
 
-            foreach ($products as $product) {
-                $this->orderItemRepository->insert(
-                    $order->getId(),
-                    $product->getId(),
-                    $product->getCount(),
-                    $product->getCount() * $product->getPrice()
-                );
-            }
+               foreach ($products as $product) {
+                   $this->orderItemRepository->insert(
+                       $order->getId(),
+                       $product->getId(),
+                       $product->getCount(),
+                       $product->getCount() * $product->getPrice()
+                   );
+               }
 
-            $userProduct = $this->userProductRepository->delete($user->getId());
+               $userProduct = $this->userProductRepository->delete($user->getId());
+               $this->pdo->commit();
+           } catch (\Throwable $exception) {
+
+               $this->pdo->rollBack();
+
+           }
         }
 
 

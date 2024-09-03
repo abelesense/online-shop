@@ -76,9 +76,9 @@ class ProductRepository extends Repository
                            p.description, 
                            p.price, 
                            p.image_url,
-                           COALESCE(up.count, 0)
+                           up.count
                     FROM products p
-                    INNER JOIN user_products up ON p.id = up.product_id AND up.user_id = :userId");
+                    LEFT JOIN user_products up ON p.id = up.product_id AND up.user_id = :userId");
         $stmt->execute(['userId' => $userId]);
         $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
         $OrderProductObjects = [];

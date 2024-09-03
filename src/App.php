@@ -10,6 +10,7 @@ use Repository\OrderRepository;
 use Repository\ProductRepository;
 use Repository\UserProductRepository;
 use Service\AuthenticationInterface;
+use Service\LoggerService;
 
 class App
 {
@@ -39,7 +40,13 @@ class App
             $request = new $requestClass($requestUri, $requestMethod, $_POST);
 
             // Вызываем метод контроллера с объектом запроса
-            $controller->$method($request);
+            try{
+                $controller->$method($request);
+            } catch(Throwable $e){
+                $loggerService = new LoggerService();
+                $loggerService = $this->error($e);
+
+            }
 
         } else {
             http_response_code(404);
