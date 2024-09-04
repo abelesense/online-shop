@@ -20,7 +20,5 @@ class LoggerService
 
 // Записываем информацию в файл text.txt
         file_put_contents('../Storage/logs/errors.txt', $logMessage, FILE_APPEND);
-        http_response_code(500);
-        require_once "../View/500.php";
     }
 }

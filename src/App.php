@@ -44,8 +44,9 @@ class App
                 $controller->$method($request);
             } catch(Throwable $e){
                 $loggerService = new LoggerService();
-                $loggerService = $this->error($e);
-
+                $loggerService->error($e);
+//                http_response_code(500);
+                require_once "../View/500.php";
             }
 
         } else {

@@ -91,23 +91,23 @@
                             Хит!
                         </div>
                         <?php
-                        $image_url = htmlspecialchars($product->getImage());
+                        $image_url = $product->getImage();
                         ?>
                         <img class="card-img-top" src="<?= $image_url; ?>" alt="Card image">
                         <div class="card-body">
-                            <p class="card-text text-muted"><?= htmlspecialchars($product->getDescription()); ?></p>
-                            <a href="#"><h5 class="card-title"><?= htmlspecialchars($product->getName()); ?></h5></a>
+                            <p class="card-text text-muted"><?= $product->getDescription(); ?></p>
+                            <a href="#"><h5 class="card-title"><?= $product->getName(); ?></h5></a>
                             <div class="card-footer">
-                                Цена: <?= htmlspecialchars($product->getPrice()); ?>$
+                                Цена: <?= $product->getPrice(); ?>$
                                 <br>
-                                Количество: <span class="product-count"><?= htmlspecialchars($product->getCount()); ?></span>
+                                Количество: <span class="product-count"><?= $product->getCount(); ?></span>
 
                                 <form class="increase-product" action="/increase-product" method="POST" style="display: inline;" onsubmit="return false;">
-                                    <input type="hidden" name="productId" value="<?= htmlspecialchars($product->getId()); ?>">
+                                    <input type="hidden" name="productId" value="<?= $product->getId(); ?>">
                                     <button type="submit">Увеличить на 1</button>
                                 </form>
                                 <form class="decrease-product" action="/decrease-product" method="POST" style="display: inline;" onsubmit="return false;">
-                                    <input type="hidden" name="productId" value="<?= htmlspecialchars($product->getId()); ?>">
+                                    <input type="hidden" name="productId" value="<?= $product->getId(); ?>">
                                     <button type="submit">Уменьшить на 1</button>
                                 </form>
                             </div>

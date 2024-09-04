@@ -10,9 +10,9 @@ class Product
     private string $price;
     private string $image;
 
-    private int $countInCart;
+    private int|null $count;
 
-    public function __construct(int $id, string $name, string $description, string $price, string $image, int $count)
+    public function __construct(int $id, string $name, string $description, string $price, string $image, int $count = null)
     {
         $this->id = $id;
         $this->name = $name;
@@ -63,7 +63,7 @@ class Product
         return $this->image;
     }
 
-    public function getCount(): int
+    public function getCount(): int|null
     {
         return $this->count;
     }

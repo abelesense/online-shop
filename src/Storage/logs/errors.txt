@@ -1,0 +1,70 @@
+Message: Entity\Product::__construct(): Argument #6 ($count) must be of type int, null given, called in /var/www/html/src/Repository/ProductRepository.php on line 92
+In file: /var/www/html/src/Entity/Product.php
+On line: 15
+Exception occurred at: 2024-09-03 13:17:00
+-----------------------------
+Message: Entity\Product::__construct(): Argument #6 ($count) must be of type int, null given, called in /var/www/html/src/Repository/ProductRepository.php on line 92
+In file: /var/www/html/src/Entity/Product.php
+On line: 15
+Exception occurred at: 2024-09-03 13:17:08
+-----------------------------
+Message: Cannot assign null to property Entity\Product::$count of type int
+In file: /var/www/html/src/Entity/Product.php
+On line: 22
+Exception occurred at: 2024-09-03 13:28:28
+-----------------------------
+Message: Cannot assign null to property Entity\Product::$count of type int
+In file: /var/www/html/src/Entity/Product.php
+On line: 22
+Exception occurred at: 2024-09-03 13:28:32
+-----------------------------
+Message: Entity\Product::getCount(): Return value must be of type int, null returned
+In file: /var/www/html/src/Entity/Product.php
+On line: 68
+Exception occurred at: 2024-09-03 13:30:09
+-----------------------------
+Message: Entity\Product::getCount(): Return value must be of type int, null returned
+In file: /var/www/html/src/Entity/Product.php
+On line: 68
+Exception occurred at: 2024-09-03 13:31:25
+-----------------------------
+Message: Failed opening required '../View/403.php' (include_path='.:/usr/local/lib/php')
+In file: /var/www/html/src/Controller/CartController.php
+On line: 58
+Exception occurred at: 2024-09-03 13:32:40
+-----------------------------
+Message: Failed opening required '../View/403.php' (include_path='.:/usr/local/lib/php')
+In file: /var/www/html/src/Controller/CartController.php
+On line: 58
+Exception occurred at: 2024-09-03 13:40:59
+-----------------------------
+Message: Failed opening required '../View/403.php' (include_path='.:/usr/local/lib/php')
+In file: /var/www/html/src/Controller/CartController.php
+On line: 58
+Exception occurred at: 2024-09-03 13:41:08
+-----------------------------
+Message: Failed opening required '../View/403.php' (include_path='.:/usr/local/lib/php')
+In file: /var/www/html/src/Controller/CartController.php
+On line: 58
+Exception occurred at: 2024-09-03 13:43:51
+-----------------------------
+Message: Failed opening required '../View/403.php' (include_path='.:/usr/local/lib/php')
+In file: /var/www/html/src/Controller/CartController.php
+On line: 58
+Exception occurred at: 2024-09-03 13:44:11
+-----------------------------
+Message: Failed opening required '../View/403.php' (include_path='.:/usr/local/lib/php')
+In file: /var/www/html/src/Controller/CartController.php
+On line: 58
+Exception occurred at: 2024-09-03 13:44:11
+-----------------------------
+Message: Failed opening required '../View/403.php' (include_path='.:/usr/local/lib/php')
+In file: /var/www/html/src/Controller/CartController.php
+On line: 58
+Exception occurred at: 2024-09-03 13:44:12
+-----------------------------
+Message: Failed opening required '../View/403.php' (include_path='.:/usr/local/lib/php')
+In file: /var/www/html/src/Controller/CartController.php
+On line: 58
+Exception occurred at: 2024-09-03 13:50:21
+-----------------------------
