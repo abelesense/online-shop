@@ -2,9 +2,9 @@
 
 namespace Service;
 
-class LoggerService
+class LoggerService implements ErrorInterface
 {
-    public function error($e)
+    public function error(\Throwable $e): void
     {
         $message = $e->getMessage();
         $file = $e->getFile();

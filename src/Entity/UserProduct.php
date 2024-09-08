@@ -46,8 +46,4 @@ class UserProduct
     {
         return $this->count;
     }
-
-
-
-
 }

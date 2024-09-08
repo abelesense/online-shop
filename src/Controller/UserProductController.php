@@ -2,24 +2,20 @@
 namespace Controller;
 
 use Repository\ProductRepository;
-use Repository\UserProductRepository;
 use Service\AuthenticationInterface;
-use PDO;
 
 class UserProductController
 {
-    private UserProductRepository $userProductRepository;
     private AuthenticationInterface $authenticationService;
     private ProductRepository $productRepository;
 
-    public function __construct(UserProductRepository $userProductModel, AuthenticationInterface $authenticationService, ProductRepository $productRepository)
+    public function __construct(AuthenticationInterface $authenticationService, ProductRepository $productRepository)
     {
-        $this->userProductRepository = $userProductModel;
         $this->authenticationService = $authenticationService;
         $this->productRepository = $productRepository;
     }
 
-    public function showCart()
+    public function showCart(): void
     {
         // Проверка авторизован ли пользователь
         if ($this->authenticationService->check()) {

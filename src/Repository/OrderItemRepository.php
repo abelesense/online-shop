@@ -4,7 +4,7 @@ namespace Repository;
 
 class OrderItemRepository extends Repository
 {
-    public function insert(int $orderId, int $productId, int $count, float $price)
+    public function insert(int $orderId, int $productId, int $count, float $price): void
     {
         $stmt = $this->pdo->prepare("INSERT INTO order_items (order_id, product_id, count, price) VALUES (:orderId, :productId, :count, :price)");
         $stmt->execute([

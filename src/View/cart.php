@@ -6,20 +6,25 @@
             <?php /** @var $product \Entity\Product */ ?>
             <?php foreach ($products as $product): ?>
                 <?php if ($product->getCount() > 0) : ?>
-                    <div class="card text-center" id="product-card-<?php echo htmlspecialchars($product->getId()); ?>">
+                    <div class="card text-center" id="product-card-<?php echo $product->getId(); ?>">
                         <a href="#">
                             <div class="card-header">Hit!</div>
-                            <img class="card-img-top" src="<?php echo htmlspecialchars($product->getImage()); ?>" alt="Card image">
+                            <img class="card-img-top" src="<?php echo $product->getImage(); ?>" alt="Card image">
                             <div class="card-body">
-                                <p class="card-text text-muted"><?php echo htmlspecialchars($product->getDescription()); ?></p>
-                                <a href="#"><h5 class="card-title"><?php echo htmlspecialchars($product->getName()); ?></h5></a>
+                                <p class="card-text text-muted"><?php echo $product->getDescription(); ?></p>
+                                <a href="#"><h5 class="card-title"><?php echo $product->getName(); ?></h5></a>
                                 <div class="card-footer">
-                                    <p>Price: <?php echo htmlspecialchars($product->getPrice()); ?></p>
-                                    <p>Count:
-                                        <button type="button" onclick="changeCartQuantity('<?php echo htmlspecialchars($product->getId()); ?>', -1)">-</button>
-                                        <input type="number" id="cart-quantity-<?php echo htmlspecialchars($product->getId()); ?>" value="<?php echo htmlspecialchars($product->getCount()); ?>" min="0" readonly>
-                                        <button type="button" onclick="changeCartQuantity('<?php echo htmlspecialchars($product->getId()); ?>', 1)">+</button>
-                                    </p>
+                                    <p>Price: <?php echo $product->getPrice(); ?></p>
+                                    <p>Count:</p>
+                                    <!-- Добавляем форму для каждого продукта -->
+                                    <form id="update-cart-<?php echo $product->getId(); ?>" method="POST" action="/update-cart">
+                                        <button type="button" onclick="changeCartQuantity('<?php echo $product->getId(); ?>', -1)">-</button>
+                                        <input type="number" id="cart-quantity-<?php echo $product->getId(); ?>" name="quantity" value="<?php echo $product->getCount(); ?>" min="0" readonly>
+                                        <button type="button" onclick="changeCartQuantity('<?php echo $product->getId(); ?>', 1)">+</button>
+                                        <!-- Скрытые поля для отправки данных -->
+                                        <input type="hidden" name="product_id" value="<?php echo $product->getId(); ?>">
+                                        <input type="hidden" id="hidden-cart-quantity-<?php echo $product->getId(); ?>" name="hidden_quantity" value="<?php echo $product->getCount(); ?>">
+                                    </form>
                                 </div>
                             </div>
                         </a>
@@ -35,15 +40,13 @@
         <div class="text-right mt-3">
             <a href="/checkout" class="btn btn-primary">Checkout</a>
             <?php foreach ($products as $product): ?>
-                    <input type="hidden" name="products[<?php echo htmlspecialchars($product->getId()); ?>][name]" value="<?php echo htmlspecialchars($product->getName()); ?>">
-                    <input type="hidden" name="products[<?php echo htmlspecialchars($product->getId()); ?>][price]" value="<?php echo htmlspecialchars($product->getPrice()); ?>">
-                    <input type="hidden" name="products[<?php echo htmlspecialchars($product->getId()); ?>][count]" value="<?php echo htmlspecialchars($product->getCount()); ?>">
-                <?php endforeach; ?>
-            </form>
+                <input type="hidden" name="products[<?php echo $product->getId(); ?>][name]" value="<?php echo $product->getName(); ?>">
+                <input type="hidden" name="products[<?php echo $product->getId(); ?>][price]" value="<?php echo $product->getPrice(); ?>">
+                <input type="hidden" name="products[<?php echo $product->getId(); ?>][count]" value="<?php echo $product->getCount(); ?>">
+            <?php endforeach; ?>
         </div>
     <?php endif; ?>
 </div>
-
 
 <style>
     body {
@@ -117,7 +120,7 @@
         quantityInput.value = newQuantity;
         hiddenQuantityInput.value = newQuantity;
 
-        // Automatically submit the form to update the cart
-        document.getElementById('update-cart-' + productId).form.submit();
+        // Автоматически отправляем форму для обновления корзины
+        document.getElementById('update-cart-' + productId).submit();
     }
 </script>

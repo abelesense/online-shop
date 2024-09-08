@@ -68,3 +68,93 @@ In file: /var/www/html/src/Controller/CartController.php
 On line: 58
 Exception occurred at: 2024-09-03 13:50:21
 -----------------------------
+Message: Typed property Controller\OrderController::$pdo must not be accessed before initialization
+In file: /var/www/html/src/Controller/OrderController.php
+On line: 82
+Exception occurred at: 2024-09-05 11:21:09
+-----------------------------
+Message: Typed property Controller\OrderController::$pdo must not be accessed before initialization
+In file: /var/www/html/src/Controller/OrderController.php
+On line: 82
+Exception occurred at: 2024-09-05 11:21:49
+-----------------------------
+Message: Typed property Controller\OrderController::$pdo must not be accessed before initialization
+In file: /var/www/html/src/Controller/OrderController.php
+On line: 82
+Exception occurred at: 2024-09-05 11:27:47
+-----------------------------
+Message: Class "Entity\Orders" not found
+In file: /var/www/html/src/Repository/OrderRepository.php
+On line: 18
+Exception occurred at: 2024-09-05 12:03:03
+-----------------------------
+Message: Call to undefined method Entity\Product::setCountInCart()
+In file: /var/www/html/src/Service/OrderService.php
+On line: 48
+Exception occurred at: 2024-09-05 12:04:08
+-----------------------------
+Message: Call to undefined method Entity\Product::setCountInCart()
+In file: /var/www/html/src/Service/OrderService.php
+On line: 49
+Exception occurred at: 2024-09-05 13:09:07
+-----------------------------
+Message: Call to undefined method Entity\Product::setCountInCart()
+In file: /var/www/html/src/Service/OrderService.php
+On line: 49
+Exception occurred at: 2024-09-05 13:18:41
+-----------------------------
+Message: Call to undefined method Entity\Product::setCountInCart()
+In file: /var/www/html/src/Service/OrderService.php
+On line: 53
+Exception occurred at: 2024-09-08 11:57:27
+-----------------------------
+Message: Call to undefined method Entity\Product::setCountInCart()
+In file: /var/www/html/src/Service/OrderService.php
+On line: 53
+Exception occurred at: 2024-09-08 11:57:33
+-----------------------------
+Message: Call to a member function getId() on null
+In file: /var/www/html/src/Controller/OrderController.php
+On line: 90
+Exception occurred at: 2024-09-08 19:42:37
+-----------------------------
+Message: Call to undefined method Controller\CartController::updateCart()
+In file: /var/www/html/src/App.php
+On line: 44
+Exception occurred at: 2024-09-08 20:05:57
+-----------------------------
+Message: Call to undefined method Entity\Product::setCountInCart()
+In file: /var/www/html/src/Service/OrderService.php
+On line: 53
+Exception occurred at: 2024-09-08 20:08:49
+-----------------------------
+Message: Call to undefined method Entity\Product::setCountInCart()
+In file: /var/www/html/src/Service/OrderService.php
+On line: 53
+Exception occurred at: 2024-09-08 20:22:26
+-----------------------------
+Message: Call to undefined method Entity\Product::setCountInCart()
+In file: /var/www/html/src/Service/OrderService.php
+On line: 53
+Exception occurred at: 2024-09-08 20:22:37
+-----------------------------
+Message: Call to undefined method Entity\Product::setCountInCart()
+In file: /var/www/html/src/Service/OrderService.php
+On line: 53
+Exception occurred at: 2024-09-08 20:23:02
+-----------------------------
+Message: Call to undefined method Entity\Product::setCountInCart()
+In file: /var/www/html/src/Service/OrderService.php
+On line: 53
+Exception occurred at: 2024-09-08 20:45:49
+-----------------------------
+Message: Call to a member function getId() on null
+In file: /var/www/html/src/Controller/OrderController.php
+On line: 90
+Exception occurred at: 2024-09-08 20:54:06
+-----------------------------
+Message: Entity\User::__construct(): Argument #1 ($id) must be of type int, null given, called in /var/www/html/src/Repository/UserRepository.php on line 21
+In file: /var/www/html/src/Entity/User.php
+On line: 12
+Exception occurred at: 2024-09-08 20:54:21
+-----------------------------

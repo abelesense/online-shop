@@ -4,7 +4,7 @@ use PDO;
 
 class Repository
 {
-    protected $pdo;
+    protected PDO $pdo;
 
     public function __construct()
     {

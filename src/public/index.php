@@ -13,39 +13,36 @@ use Repository\OrderRepository;
 use Repository\ProductRepository;
 use Repository\UserProductRepository;
 use Repository\UserRepository;
+use Service\CartService;
+use Service\OrderService;
 
 $container = new Container();
 
 $container->set(CartController::class, function (Container $container) {
     $userProductRepository = new UserProductRepository();
     $authenticationService = $container->get(\Service\AuthenticationInterface::class);
-    $controller = new CartController($userProductRepository, $authenticationService);
+    $cartService = $container->get(CartService::class);
+    $controller = new CartController($userProductRepository, $authenticationService, $cartService);
     return $controller;
 });
 $container->set(OrderController::class, function (Container $container) {
-    $orderRepository = new OrderRepository();
-    $orderItemRepository = new OrderItemRepository();
     $productRepository = new ProductRepository();
-    $userProductRepository = new UserProductRepository();
     $authenticationService = $container->get(\Service\AuthenticationInterface::class);
+    $orderService = $container->get(OrderService::class);
 
     $controller = new \Controller\OrderController
     (
-        $userProductRepository,
         $productRepository,
-        $orderRepository,
-        $orderItemRepository,
-        $authenticationService
+        $authenticationService,
+        $orderService
     );
     return $controller;
 });
 $container->set(ProductController::class, function (Container $container) {
     $productRepository = new ProductRepository();
-    $userProductRepository = new UserProductRepository();
     $authenticationService = $container->get(\Service\AuthenticationInterface::class);
     $controller = new ProductController(
         $productRepository,
-        $userProductRepository,
         $authenticationService
     );
     return $controller;
@@ -58,11 +55,9 @@ $container->set(UserController::class, function (Container $container) {
     return $controller;
 });
 $container->set(UserProductController::class, function (Container $container) {
-    $userProductRepository = new UserProductRepository();
     $productRepository = new ProductRepository();
     $authenticationService = $container->get(\Service\AuthenticationInterface::class);
     $controller = new UserProductController(
-        $userProductRepository,
         $authenticationService,
         $productRepository
     );
@@ -74,6 +69,32 @@ $container->set(\Service\AuthenticationInterface::class, function () {
         $userRepository
     );
     return $controller;
+});
+$container->set(OrderService::class, function(Container $container) {
+    $orderRepository = new OrderRepository();
+    $orderItemRepository = new OrderItemRepository();
+    $userProductRepository = new UserProductRepository();
+    $productRepository = new ProductRepository();
+    $pdo = $container->get(PDO::class);
+    $controller = new OrderService(
+        $orderRepository,
+        $orderItemRepository,
+        $productRepository,
+        $userProductRepository,
+        $pdo
+    );
+    return $controller;
+});
+$container->set(PDO::class, function(){
+    $dbName = getenv('DB_NAME');
+    $dbUser = getenv('DB_USER');
+    $dbPassword = getenv('DB_PASSWORD');
+    $pdo = new PDO("pgsql:host=db;port=5432;dbname=$dbName", "$dbUser", "$dbPassword");
+    return $pdo;
+});
+$container->set(CartService::class, function(){
+    $userProductRepository = new UserProductRepository();
+    return new CartService($userProductRepository);
 });
 $app = new \App($container);
 

@@ -4,29 +4,30 @@ namespace Controller;
 use Repository\UserProductRepository;
 use Request\Request;
 use Service\AuthenticationInterface;
-use Service\CookieAuthenticationService;
+use Service\CartService;
 
 class CartController
 {
-
-    private UserProductRepository $userProductModel;
+    private UserProductRepository $userProductRepository;
     private AuthenticationInterface  $authenticationService;
-    // Конструктор инициализирует модели UserProductRepository и ProductRepository
-    public function __construct(UserProductRepository $userProductRepository, AuthenticationInterface $authenticationService)
+    private CartService $cartService;
+
+    public function __construct(UserProductRepository $userProductRepository, AuthenticationInterface $authenticationService, CartService $cartService)
     {
-        $this->userProductModel = $userProductRepository;
+        $this->userProductRepository = $userProductRepository;
         $this->authenticationService = $authenticationService;
+        $this->cartService = $cartService;
     }
-    public function getAddProductForm()
+    public function getAddProductForm(): void
     {
         require_once "../View/add-product.php";
     }
 
-    public function increaseProductQuantity(Request $request)
+    public function increaseProductQuantity(Request $request): void
     {
         $data = $request->getData();
 
-        if ($this->authenticationService->check()) {
+        if (!$this->authenticationService->check()) {
             http_response_code(403);
             require_once '../View/404.php';
             return;
@@ -34,26 +35,16 @@ class CartController
 
         $user = $this->authenticationService->getUser();
         $productId = $data['productId'];
-
-        $existingProduct = $this->userProductModel->getOneByUserIdAndProductId($user->getId(), $productId);
-
-        if ($existingProduct) {
-            $this->userProductModel->increaseProductCount($user->getId(), $productId);
-        } else {
-            $this->userProductModel->addProductToCart($user->getId(), $productId, 1);
-        }
-        $count = $this->userProductModel->countOfUserProducts($user->getId(), $productId);
-        $result = ['count' => $count];
+        $result = $this->cartService->increaseProduct($user, $productId);
 
         echo json_encode($result);
-
     }
 
-    public function decreaseProductQuantity(Request $request)
+    public function decreaseProductQuantity(Request $request): void
     {
         $data = $request->getData();
 
-        if ($this->authenticationService->check()) {
+        if (!$this->authenticationService->check()) {
             http_response_code(403);
             require_once '../View/403.php';
             return;
@@ -61,23 +52,15 @@ class CartController
 
         $user = $this->authenticationService->getUser();
         $productId = $data['productId'];
+        $result = $this->cartService->decreaseProduct($user, $productId);
 
-        $existingProduct = $this->userProductModel->getOneByUserIdAndProductId($user->getId(), $productId);
-
-        if ($existingProduct) {
-            $this->userProductModel->decreaseProductCount($existingProduct, $user->getId(), $productId);
-        }
-        $count = $this->userProductModel->countOfUserProducts($user->getId(), $productId);
-        $result = ['count' => $count];
         echo json_encode($result);
-
-
     }
 
-    public function updateCart(Request $request)
+    public function updateCart(Request $request): void
     {
             $data = $request->getData();
-            if ($this->authenticationService->check()) {
+            if (!$this->authenticationService->check()) {
                 http_response_code(403);
             }
             $user = $this->authenticationService->getUser();
@@ -85,19 +68,17 @@ class CartController
             $quantity = $data['quantity'];
 
             if ($quantity > 0) {
-                if ($this->userProductModel->updateCart($user->getId(), $productId, $quantity)) {
+                if ($this->userProductRepository->updateCart($user->getId(), $productId, $quantity)) {
                     header('Location: /cart');
                 } else {
                     echo "Ошибка при обновлении корзины.";
                 }
             } else {
-                if ($this->userProductModel->deleteProduct($user->getId(), $productId)) {
+                if ($this->userProductRepository->deleteProduct($user->getId(), $productId)) {
                     header('Location: /cart');
                 } else {
                     echo "Ошибка при удалении товара из корзины.";
                 }
             }
     }
-
-
 }

@@ -6,7 +6,7 @@ use PDO;
 class UserRepository extends Repository
 {
 
-    public function insert(string $name, string $email, string $passwordHash)
+    public function insert(string $name, string $email, string $passwordHash): void
     {
         $stmt = $this->pdo->prepare("INSERT INTO users (name, email, password) VALUES (:name, :email, :password)");
         $stmt->execute([':name' => $name, ':email' => $email, ':password' => $passwordHash]);

@@ -42,12 +42,12 @@
                         $totalAmount += $productTotal; // Добавляем стоимость товара к общей сумме
                         ?>
                         <tr>
-                            <td><?php echo htmlspecialchars($product->getName()) . ' x ' . htmlspecialchars($product->getCount()); ?></td>
-                            <td><?php echo htmlspecialchars($productTotal); ?></td>
+                            <td><?php echo $product->getName() . ' x ' . $product->getCount(); ?></td>
+                            <td><?php echo $productTotal; ?></td>
                         </tr>
-                        <input type="hidden" name="products[<?php echo htmlspecialchars($product->getId()); ?>][name]" value="<?php echo htmlspecialchars($product->getName()); ?>">
-                        <input type="hidden" name="products[<?php echo htmlspecialchars($product->getId()); ?>][price]" value="<?php echo htmlspecialchars($product->getPrice()); ?>">
-                        <input type="hidden" name="products[<?php echo htmlspecialchars($product->getId()); ?>][count]" value="<?php echo htmlspecialchars($product->getCount()); ?>">
+                        <input type="hidden" name="products[<?php echo $product->getId(); ?>][name]" value="<?php echo $product->getName(); ?>">
+                        <input type="hidden" name="products[<?php echo $product->getId(); ?>][price]" value="<?php echo $product->getPrice(); ?>">
+                        <input type="hidden" name="products[<?php echo $product->getId(); ?>][count]" value="<?php echo $product->getCount(); ?>">
                     <?php endforeach; ?>
                     <tr>
                         <td>Доставка</td>
@@ -55,11 +55,11 @@
                     </tr>
                     <tr>
                         <th>Итого</th>
-                        <th><?php echo htmlspecialchars($totalAmount); ?></th>
+                        <th><?php echo $totalAmount; ?></th>
                     </tr>
                 </table><br>
                 <!-- Скрытое поле для передачи общей суммы -->
-                <input type="hidden" name="total_amount" value="<?php echo htmlspecialchars($totalAmount); ?>">
+                <input type="hidden" name="total_amount" value="<?php echo $totalAmount; ?>">
 
                 <div>
                     <input type="radio" name="payment_method" value="dbt" checked> Банковский перевод

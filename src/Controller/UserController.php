@@ -4,10 +4,7 @@ namespace Controller;
 use Repository\UserRepository;
 use Request\LoginRequest;
 use Request\RegistrateRequest;
-use Request\Request;
 use Service\AuthenticationInterface;
-use Service\CookieAuthenticationService;
-use Service\SessionAuthenticationService;
 
 class UserController
 {
@@ -19,22 +16,22 @@ class UserController
         $this->authenticationService = $authenticationService;
     }
 
-    public function getMyProfile()
+    public function getMyProfile(): void
     {
         require_once '../View/get_profile.php';
     }
 
-    public function getLogin()
+    public function getLogin(): void
     {
         require_once '../View/get_login.php';
     }
 
-    public function getRegistration()
+    public function getRegistration(): void
     {
         require_once '../View/get_registration.php';
     }
 
-    public function registrate(RegistrateRequest $request)
+    public function registrate(RegistrateRequest $request): void
     {
         $errors = $request->validate();
         if (empty($errors)) {
@@ -48,17 +45,12 @@ class UserController
             $user->insert($name, $email, $passwordHash);
 
             header('Location: /login');
-
-
         }
 
-
         require_once __DIR__ . '/../View/get_registration.php';
-
-
     }
 
-    public function login(LoginRequest $request)
+    public function login(LoginRequest $request): void
     {
         $errors = $request->validate();
         //Если нет ошибок, выполняем подключение к БД и проверку пользователя
@@ -70,7 +62,7 @@ class UserController
         require_once __DIR__ . '/../View/get_login.php';
     }
 
-    public function logout()
+    public function logout(): void
     {
         // Завершите сессию
         $this->authenticationService->logout();

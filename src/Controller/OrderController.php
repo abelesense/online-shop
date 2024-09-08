@@ -2,60 +2,35 @@
 
 namespace Controller;
 
-use OrderService;
-use Repository\OrderItemRepository;
-use Repository\OrderRepository;
 use Repository\ProductRepository;
-use Repository\UserProductRepository;
 use Request\OrderRequest;
-use Request\Request;
 use Service\AuthenticationInterface;
-use Service\CookieAuthenticationService;
+use Service\OrderService;
 
 class OrderController
 {
-    private OrderRepository $orderRepository;
-    private OrderItemRepository $orderItemRepository;
     private ProductRepository $productRepository;
-    private UserProductRepository $userProductRepository;
     private AuthenticationInterface  $authenticationService;
     private OrderService $orderService;
-    private \PDO $pdo;
 
     public function __construct(
-        UserProductRepository $userProductRepository,
         ProductRepository $productRepository,
-        OrderRepository $orderRepository,
-        OrderItemRepository $orderItemRepository,
-        AuthenticationInterface $authenticationService
+        AuthenticationInterface $authenticationService,
+        OrderService $orderService
     )
     {
-        $this->userProductRepository = $userProductRepository;
         $this->productRepository = $productRepository;
-        $this->orderRepository = $orderRepository;
-        $this->orderItemRepository = $orderItemRepository;
         $this->authenticationService = $authenticationService;
         $this->orderService = $orderService;
-        $this->pdo = $pdo;
     }
 
-    public function getOrder()
+    public function getOrder(): void
     {
         $user = $this->authenticationService->getUser();
         //Проверка авторизован ли пользователь
         if($this->authenticationService->check()) {
             //Получение списка продуктов из модели
-            $orders = $this->orderRepository->getAllByUserId($user->getId());
-            $orderIds = [];
-
-            foreach($orders as $order) {
-                $orderIds[] = $order->getId();
-            }
-            $orderData = [];
-
-            foreach($orderIds as $orderId) {
-                $orderData = $this->orderItemRepository->getAllByOrderId($orderId);
-            }
+            $orderData = $this->orderService->getProducts($user);
 
             // Передача данных в представление
             require_once "../View/order.php";;
@@ -65,7 +40,7 @@ class OrderController
         }
     }
 
-    public function getCheckOut()
+    public function getCheckOut(): void
     {
         if ($this->authenticationService->check()) {
             $user = $this->authenticationService->getUser();
@@ -77,12 +52,10 @@ class OrderController
         }
     }
 
-    public function registrateOrder(OrderRequest $request)
+    public function registrateOrder(OrderRequest $request): void
     {
         $errors = $request->validateOrderForm();
         if (empty($errors)) {
-            $this->pdo->beginTransaction();
-           try{
                $data = $request->getData();
                $user = $this->authenticationService->getUser();
                $street = $request->getStreet();
@@ -96,12 +69,7 @@ class OrderController
                    $phone,
                    $totalAmount
                );
-               $this->pdo->commit();
-           } catch (\Throwable $exception) {
 
-               $this->pdo->rollBack();
-
-           }
         }
 
 

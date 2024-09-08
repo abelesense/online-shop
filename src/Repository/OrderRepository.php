@@ -5,7 +5,7 @@ namespace Repository;
 class OrderRepository extends Repository
 {
 
-    public function create(string $city, string $street, string $phone, int $userId, int $totalAmount): ?\Entity\Orders
+    public function create(string $city, string $street, string $phone, int $userId, int $totalAmount): ?\Entity\Order
     {
         $stmt = $this->pdo->prepare("INSERT INTO orders (city, street, number, user_id, total_amount) VALUES (:city, :street, :phone, :userId, :totalAmount) RETURNING id");
         $stmt->execute([':city' => $city, ':street' => $street, ':phone' => $phone, ':userId' => $userId, ':totalAmount' => $totalAmount]);
@@ -15,7 +15,7 @@ class OrderRepository extends Repository
             return null;
         }
         $orderId = $data['id'];
-        return new \Entity\Orders($orderId, $city, $street, $phone, $userId, $totalAmount);
+        return new \Entity\Order($orderId, $city, $street, $phone, $userId, $totalAmount);
     }
     public function getAllByUserId(int $userId): array
     {

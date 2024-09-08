@@ -67,4 +67,8 @@ class Product
     {
         return $this->count;
     }
+    public function setCountInCart(int $count): void
+    {
+        $this->count = $count;
+    }
 }
